@@ -1,15 +1,17 @@
 package interfaces
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/MoutonGrognon/robot-game-lua/rgcore"
 )
 
 type SaveMatchRequest struct {
-	MatchId string                    `json:"matchId"`
+	MatchId uuid.UUID                 `json:"matchId"`
 	Match   []map[int]rgcore.BotState `json:"match"`
 }
 
 type CancelMatchRequest struct {
-	MatchId string `json:"matchId"`
-	Error   error  `json:"error"`
+	MatchId uuid.UUID `json:"matchId"`
+	Error   error     `json:"error"`
 }
