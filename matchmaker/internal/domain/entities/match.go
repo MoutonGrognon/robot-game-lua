@@ -5,10 +5,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/MoutonGrognon/robot-game-lua/rgcore"
+	"github.com/MoutonGrognon/robot-game-lua/rgcore/rgentities"
 )
 
-type Game []map[int]rgcore.BotState
+type Game []map[int]rgentities.BotState
 
 type Match struct {
 	Id       uuid.UUID

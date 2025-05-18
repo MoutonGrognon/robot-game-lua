@@ -3,7 +3,6 @@ module github.com/MoutonGrognon/robot-game-lua/referee
 go 1.21.4
 
 require (
-	github.com/MoutonGrognon/robot-game-lua/rgcore v0.0.0
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lib/pq v1.10.9
@@ -21,4 +20,14 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 )
 
-replace github.com/MoutonGrognon/robot-game-lua/rgcore v0.0.0 => ../rgcore
+require (
+	github.com/MoutonGrognon/robot-game-lua/rgcore/rgconst v0.0.0
+	github.com/MoutonGrognon/robot-game-lua/rgcore/rgentities v0.0.0
+	github.com/MoutonGrognon/robot-game-lua/rgcore/rgutils v0.0.0
+)
+
+replace (
+	github.com/MoutonGrognon/robot-game-lua/rgcore/rgconst v0.0.0 => ../rgcore/rgconst
+	github.com/MoutonGrognon/robot-game-lua/rgcore/rgentities v0.0.0 => ../rgcore/rgentities
+	github.com/MoutonGrognon/robot-game-lua/rgcore/rgutils v0.0.0 => ../rgcore/rgutils
+)

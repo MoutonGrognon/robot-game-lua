@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/MoutonGrognon/robot-game-lua/referee/internal/domain/external"
-	"github.com/MoutonGrognon/robot-game-lua/rgcore"
+	"github.com/MoutonGrognon/robot-game-lua/rgcore/rgentities"
 )
 
 const (
@@ -24,7 +24,7 @@ func NewMatchmakerMS() external.MatchmakerMS {
 	return MatchmakerMS{}
 }
 
-func (MatchmakerMS) SaveMatch(matchId uuid.UUID, game []map[int]rgcore.BotState) error {
+func (MatchmakerMS) SaveMatch(matchId uuid.UUID, game []map[int]rgentities.BotState) error {
 	postBody, _ := json.Marshal(external.MatchmakerSaveMatchRequest{
 		MatchId: matchId,
 		Game:    game,
