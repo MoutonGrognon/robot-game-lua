@@ -1,6 +1,6 @@
 module github.com/MoutonGrognon/robot-game-lua/rgcore
 
-go 1.21.4
+go 1.23.9
 
 require (
 	github.com/MoutonGrognon/robot-game-lua/rgcore/rgconst v0.0.0
