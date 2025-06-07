@@ -1,13 +1,12 @@
 module github.com/MoutonGrognon/robot-game-lua/matchmaker
 
-go 1.22
-
-toolchain go1.23.9
+go 1.23.9
 
 require (
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lib/pq v1.10.9
+	github.com/parquet-go/parquet-go v0.25.0
 )
 
 require (
@@ -28,7 +27,6 @@ require (
 	github.com/MoutonGrognon/robot-game-lua/rgcore/rgconst v0.0.0
 	github.com/MoutonGrognon/robot-game-lua/rgcore/rgentities v0.0.0
 	github.com/MoutonGrognon/robot-game-lua/rgcore/rgutils v0.0.0
-	github.com/parquet-go/parquet-go v0.25.0
 )
 
 replace (
