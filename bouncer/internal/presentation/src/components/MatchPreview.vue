@@ -32,19 +32,19 @@
   <!-- TODO: WIP navigate to full match display -->
   <RouterLink :to="`matchs/${props.preview.Id}`" class="wrapper">
     <div class="count">{{ props.index }}</div>
-    <div class="blueName" :class="{ 'winner': trueBlueResult > 0, 'loser': trueBlueResult < 0 }">
+    <div class="blue-name" :class="{ 'winner': trueBlueResult > 0, 'loser': trueBlueResult < 0 }">
       {{ props.preview.BotName1 }}
     </div>
     <FontAwesomeIcon :icon="['fas', getResultIcon(trueBlueResult)]"
       :class="{ 'winner': trueBlueResult > 0, 'loser': trueBlueResult < 0 }" />
     <div class="score">
-      <span class="blueScore">{{ props.preview.Score1 }}</span>
+      <span class="blue-score">{{ props.preview.Score1 }}</span>
       <span>-</span>
-      <span class="redScore">{{ props.preview.Score2 }}</span>
+      <span class="red-score">{{ props.preview.Score2 }}</span>
     </div>
     <FontAwesomeIcon :icon="['fas', getResultIcon(-trueBlueResult)]"
       :class="{ 'winner': trueBlueResult < 0, 'loser': trueBlueResult > 0 }" />
-    <div class="redName" :class="{ 'winner': trueBlueResult < 0, 'loser': trueBlueResult > 0 }">
+    <div class="red-name" :class="{ 'winner': trueBlueResult < 0, 'loser': trueBlueResult > 0 }">
       {{ props.preview.BotName2 }}
     </div>
   </RouterLink>
@@ -66,32 +66,32 @@
     width: 50px
   }
 
-  .blueName,
-  .redName {
+  .blue-name,
+  .red-name {
     /* TODO: WIP*/
     width: 150px;
   }
 
-  .blueName {
+  .blue-name {
     text-align: right;
   }
 
-  .redName {
+  .red-name {
     text-align: left;
   }
 
-  .blueScore,
-  .redScore {
+  .blue-score,
+  .red-score {
     padding: 0 8px;
     width: 20px;
     display: inline-block;
   }
 
-  .blueScore {
+  .blue-score {
     text-align: right;
   }
 
-  .redScore {
+  .red-score {
     text-align: left;
   }
 
