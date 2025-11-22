@@ -21,7 +21,7 @@ import (
 )
 
 const MATCH_TIMEOUT = 2 *
-	// Convert from nanoseconds to milliseconds
+	// Convert from milliseconds to nanoseconds
 	1000000 *
 	// Init time
 	((rgconst.BOT_INIT_TIME_BUDGET *
@@ -40,24 +40,46 @@ const MATCH_TIMEOUT = 2 *
 			2 * rgconst.SPAWN_COUNT))
 
 type MatchmakerService struct {
-	botRepo       repositories.BotRepository
-	matchRepo     repositories.MatchRepository
-	refereeMS     external.RefereeMS
-	matchQueue    entities.MatchQueue
-	isRunning     bool
-	currentMatch  entities.PendingMatch
-	debounceTimer *time.Timer
-	mu            sync.Mutex
+	botRepo           repositories.BotRepository
+	matchRepo         repositories.MatchRepository
+	refereeMS         external.RefereeMS
+	matchQueue        entities.MatchQueue
+	isRunning         bool
+	currentMatch      entities.PendingMatch
+	debounceTimer     *time.Timer
+	matchMu           sync.Mutex
+	forcedRankedMatch bool
+	rankedMatchTimer  *time.Timer
+	rankedMu          sync.Mutex
 }
 
 func NewMatchmakerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository) MatchmakerService {
-	return MatchmakerService{
-		botRepo:    botRepo,
-		matchRepo:  matchRepo,
-		refereeMS:  rest.NewRefereeMS(),
-		matchQueue: entities.NewMatchQueue(),
-		isRunning:  false,
+	matchmakerService := MatchmakerService{
+		botRepo:           botRepo,
+		matchRepo:         matchRepo,
+		refereeMS:         rest.NewRefereeMS(),
+		matchQueue:        entities.NewMatchQueue(),
+		isRunning:         false,
+		forcedRankedMatch: true,
 	}
+	matchmakerService.forceDebouncedRankedMatch()
+	err := matchmakerService.StartDebouncedMatch()
+	// TODO: WIP for loop + sleep to debounce
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
+	return matchmakerService
+}
+
+func (s *MatchmakerService) forceDebouncedRankedMatch() {
+	// Matchs are very unlikely to reach a duration of MATCH_TIMEOUT
+	// so it should leave quite some time for unranked matchs
+	s.rankedMatchTimer = time.AfterFunc(MATCH_TIMEOUT, func() {
+		s.forceDebouncedRankedMatch()
+	})
+	s.rankedMu.Lock()
+	s.forcedRankedMatch = true
+	s.rankedMu.Unlock()
 }
 
 func (s *MatchmakerService) printGrid(currentGameState map[int]rgentities.BotState) {
@@ -108,8 +130,8 @@ func (s *MatchmakerService) SaveMatch(matchId uuid.UUID, game []map[int]rgentiti
 		}
 	}
 	fmt.Printf("%v - %v\n", score1, score2)
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.matchMu.Lock()
+	defer s.matchMu.Unlock()
 	if matchId != s.currentMatch.Id {
 		err := errors.New("Corrupted Match ID")
 		fmt.Printf("Error: %v\n", err)
@@ -143,7 +165,9 @@ func (s *MatchmakerService) SaveMatch(matchId uuid.UUID, game []map[int]rgentiti
 		CompressedGame: compressedGame,
 		Score1:         score1,
 		Score2:         score2,
+		Ranked:         s.currentMatch.Ranked,
 	})
+	// TODO: update bots elo if match was ranked
 	return err
 }
 
@@ -153,36 +177,33 @@ func (s *MatchmakerService) CancelMatch(matchId uuid.UUID, err error) error {
 }
 
 func (s *MatchmakerService) KillMatch() error {
-	s.mu.Lock()
+	s.matchMu.Lock()
 	defer func() {
 		s.isRunning = false
-		s.mu.Unlock()
+		s.matchMu.Unlock()
 	}()
 	return s.refereeMS.KillMatch()
 }
 
-func (s *MatchmakerService) AddMatchToQueue(blueName string, redName string) (bool, error) {
-	// TODO: better system to handle queue size and check on elements added
-	if s.matchQueue.IsFull() {
-		return false, nil
-	}
+func (s *MatchmakerService) CreateMatchFromNames(blueName string, redName string, ranked bool) (entities.PendingMatch, error) {
+	pendingMatch := entities.PendingMatch{}
 	blueId, err := s.botRepo.GetIdFromName(blueName)
 	if err != nil {
-		return false, err
+		return pendingMatch, err
 	}
 	redId, err := s.botRepo.GetIdFromName(redName)
 	if err != nil {
-		return false, err
+		return pendingMatch, err
 	}
 	blueUserName, err := s.botRepo.GetUserNameFromBotId(blueId)
 	if err != nil {
-		return false, err
+		return pendingMatch, err
 	}
 	redUserName, err := s.botRepo.GetUserNameFromBotId(redId)
 	if err != nil {
-		return false, err
+		return pendingMatch, err
 	}
-	pendingMatch := entities.PendingMatch{
+	pendingMatch = entities.PendingMatch{
 		Id:        uuid.New(),
 		BotId1:    blueId,
 		BotId2:    redId,
@@ -190,6 +211,19 @@ func (s *MatchmakerService) AddMatchToQueue(blueName string, redName string) (bo
 		BotName2:  redName,
 		UserName1: blueUserName,
 		UserName2: redUserName,
+		Ranked:    ranked,
+	}
+	return pendingMatch, nil
+}
+
+func (s *MatchmakerService) AddMatchToQueue(blueName string, redName string) (bool, error) {
+	// TODO: better system to handle queue size and check on elements added
+	if s.matchQueue.IsFull() {
+		return false, nil
+	}
+	pendingMatch, err := s.CreateMatchFromNames(blueName, redName, false)
+	if err != nil {
+		return false, err
 	}
 	added := s.matchQueue.Push(pendingMatch)
 	go s.StartDebouncedMatch()
@@ -203,15 +237,41 @@ func (s *MatchmakerService) StartMatch(pendingMatch entities.PendingMatch) error
 }
 
 func (s *MatchmakerService) StartDebouncedMatch() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	var err error
+	s.matchMu.Lock()
+	defer s.matchMu.Unlock()
 	if s.isRunning {
 		return nil
 	}
 	if s.debounceTimer != nil {
 		s.debounceTimer.Stop()
 	}
-	pendingMatch, err := s.matchQueue.Pop()
+	var pendingMatch entities.PendingMatch
+	if s.forcedRankedMatch {
+		s.rankedMu.Lock()
+		s.forcedRankedMatch = false
+		s.rankedMu.Unlock()
+		// TODO: WIP choose bots based on their elo
+		blueName := "random"
+		redName := "random"
+		pendingMatch, err = s.CreateMatchFromNames(blueName, redName, true)
+	} else {
+		// force next match to be ranked
+		s.rankedMu.Lock()
+		if s.rankedMatchTimer != nil {
+			s.rankedMatchTimer.Stop()
+		}
+		s.forcedRankedMatch = true
+		s.forceDebouncedRankedMatch()
+		s.rankedMu.Unlock()
+		if s.matchQueue.IsEmpty() {
+			fmt.Printf("Sleep for at most %vs\n", MATCH_TIMEOUT/1000000000)
+			time.AfterFunc(MATCH_TIMEOUT, func() {
+				s.StartDebouncedMatch()
+			})
+		}
+		pendingMatch, err = s.matchQueue.Pop()
+	}
 	if err != nil {
 		return err
 	}
@@ -222,7 +282,6 @@ func (s *MatchmakerService) StartDebouncedMatch() error {
 		for err != nil {
 			fmt.Printf("Error: %v", err)
 			if s.matchQueue.IsEmpty() {
-				fmt.Println("Queue is empty")
 				return
 			}
 			fmt.Println("Try next match in queue")

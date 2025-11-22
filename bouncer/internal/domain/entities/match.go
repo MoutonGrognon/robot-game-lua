@@ -17,6 +17,7 @@ type MatchSummary struct {
 	Date      time.Time
 	Score1    int
 	Score2    int
+	Ranked    bool
 }
 
 type Match struct {

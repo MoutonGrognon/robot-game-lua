@@ -12,4 +12,5 @@ type PendingMatch struct {
 	BotName2  string
 	UserName1 string
 	UserName2 string
+	Ranked    bool
 }

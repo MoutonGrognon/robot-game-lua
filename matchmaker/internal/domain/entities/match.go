@@ -22,4 +22,5 @@ type Match struct {
 	CompressedGame []byte
 	Score1         int
 	Score2         int
+	Ranked         bool
 }
