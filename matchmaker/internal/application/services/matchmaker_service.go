@@ -45,7 +45,7 @@ type MatchmakerService struct {
 	refereeMS         external.RefereeMS
 	matchQueue        entities.MatchQueue
 	isRunning         bool
-	currentMatch      entities.PendingMatch
+	currentMatch      *entities.PendingMatch
 	debounceTimer     *time.Timer
 	matchMu           sync.Mutex
 	forcedRankedMatch bool
@@ -61,24 +61,33 @@ func NewMatchmakerService(botRepo repositories.BotRepository, matchRepo reposito
 		matchQueue:        entities.NewMatchQueue(),
 		isRunning:         false,
 		forcedRankedMatch: true,
+		currentMatch:      &entities.PendingMatch{},
 	}
 	matchmakerService.forceDebouncedRankedMatch()
-	err := matchmakerService.StartDebouncedMatch()
-	// TODO: WIP for loop + sleep to debounce
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	go func() {
+		err := matchmakerService.StartDebouncedMatch()
+		for err != nil {
+			fmt.Printf("Error: %v\n", err)
+			fmt.Println("Wait 1s and retry ...")
+			time.Sleep(1 * time.Second)
+			err = matchmakerService.StartDebouncedMatch()
+		}
+		fmt.Println("Auto-matching successfully started")
+	}()
 	return matchmakerService
 }
 
 func (s *MatchmakerService) forceDebouncedRankedMatch() {
+	s.rankedMu.Lock()
+	s.forcedRankedMatch = true
+	if s.rankedMatchTimer != nil {
+		s.rankedMatchTimer.Stop()
+	}
 	// Matchs are very unlikely to reach a duration of MATCH_TIMEOUT
 	// so it should leave quite some time for unranked matchs
 	s.rankedMatchTimer = time.AfterFunc(MATCH_TIMEOUT, func() {
 		s.forceDebouncedRankedMatch()
 	})
-	s.rankedMu.Lock()
-	s.forcedRankedMatch = true
 	s.rankedMu.Unlock()
 }
 
@@ -231,9 +240,13 @@ func (s *MatchmakerService) AddMatchToQueue(blueName string, redName string) (bo
 }
 
 func (s *MatchmakerService) StartMatch(pendingMatch entities.PendingMatch) error {
-	s.currentMatch = pendingMatch
+	*s.currentMatch = pendingMatch
 	s.isRunning = true
-	return s.refereeMS.StartMatch(pendingMatch.Id, pendingMatch.BotId1, pendingMatch.BotId2)
+	err := s.refereeMS.StartMatch(pendingMatch.Id, pendingMatch.BotId1, pendingMatch.BotId2)
+	if err != nil {
+		s.isRunning = false
+	}
+	return err
 }
 
 func (s *MatchmakerService) StartDebouncedMatch() error {
@@ -257,13 +270,7 @@ func (s *MatchmakerService) StartDebouncedMatch() error {
 		pendingMatch, err = s.CreateMatchFromNames(blueName, redName, true)
 	} else {
 		// force next match to be ranked
-		s.rankedMu.Lock()
-		if s.rankedMatchTimer != nil {
-			s.rankedMatchTimer.Stop()
-		}
-		s.forcedRankedMatch = true
 		s.forceDebouncedRankedMatch()
-		s.rankedMu.Unlock()
 		if s.matchQueue.IsEmpty() {
 			fmt.Printf("Sleep for at most %vs\n", MATCH_TIMEOUT/1000000000)
 			time.AfterFunc(MATCH_TIMEOUT, func() {
@@ -280,7 +287,7 @@ func (s *MatchmakerService) StartDebouncedMatch() error {
 		fmt.Println("Kill match because it took too long")
 		err := s.StartDebouncedMatch()
 		for err != nil {
-			fmt.Printf("Error: %v", err)
+			fmt.Printf("Error: %v\n", err)
 			if s.matchQueue.IsEmpty() {
 				return
 			}

@@ -15,6 +15,12 @@ services:
       POSTGRES_USERNAME: postgres
     volumes:
       - rglua_database_internals:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 1s
+      retries: 10
+      start_period: 20s
 
   # TODO: WIP enable/disable depending on env var for dev/prod
   adminer:
@@ -49,9 +55,11 @@ services:
     expose:
       - "3333"
     depends_on:
-      - rglua_db
       - blue_player
       - red_player
+    depends_on:
+      rglua_db:
+        condition: service_healthy
 
   matchmaker:
     build:
@@ -60,8 +68,10 @@ services:
     expose:
       - "4444"
     depends_on:
-      - rglua_db
       - referee
+    depends_on:
+      rglua_db:
+        condition: service_healthy
 
   bouncer:
     build:
@@ -70,6 +80,8 @@ services:
     ports:
       - 5555:5555
     depends_on:
-      - rglua_db
       - matchmaker
+    depends_on:
+      rglua_db:
+        condition: service_healthy
 
