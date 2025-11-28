@@ -55,9 +55,10 @@ services:
     expose:
       - "3333"
     depends_on:
-      - blue_player
-      - red_player
-    depends_on:
+      blue_player:
+        condition: service_started
+      red_player:
+        condition: service_started
       rglua_db:
         condition: service_healthy
 
@@ -68,8 +69,8 @@ services:
     expose:
       - "4444"
     depends_on:
-      - referee
-    depends_on:
+      referee:
+        condition: service_started
       rglua_db:
         condition: service_healthy
 
@@ -80,8 +81,8 @@ services:
     ports:
       - 5555:5555
     depends_on:
-      - matchmaker
-    depends_on:
+      matchmaker:
+        condition: service_started
       rglua_db:
         condition: service_healthy
 
