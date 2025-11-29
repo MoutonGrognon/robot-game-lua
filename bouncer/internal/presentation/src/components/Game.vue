@@ -302,19 +302,23 @@
     left: -4px;
   }
 
+  @font-face {
+    font-family: Inconsolata;
+    src: url("/src/assets/fonts/font.woff2");
+  }
+
   .hp {
     align-self: center;
     width: 100%;
     height: 18px;
     text-align: center;
     font-size: 12px;
-    font-weight: 700;
+    font-family: Inconsolata;
     margin: 0;
-    padding: 0 0 0 0.5px;
+    padding-top: 1px;
   }
 
   .guard {
-    color: #00ff00;
     border-color: #00ff00;
   }
 
