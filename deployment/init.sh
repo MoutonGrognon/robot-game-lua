@@ -17,7 +17,8 @@ echo "INSERT INTO users(id, name) VALUES('$EXAMPLES_ID', '$EXAMPLES_NAME');" >> 
 LOCAL_BOTS_PATH="../bots"
 DOCKER_BOTS_FOLDER="/bots"
 
-for path in $LOCAL_BOTS_PATH/public/* $LOCAL_BOTS_PATH/private/*; do
+shopt -s nullglob
+for path in $LOCAL_BOTS_PATH/public/*.lua $LOCAL_BOTS_PATH/private/*.lua; do
     filename=${path##*/}
     bot=${filename%.lua}
     path_in_docker="$DOCKER_BOTS_FOLDER/$filename"
@@ -28,3 +29,4 @@ for path in $LOCAL_BOTS_PATH/public/* $LOCAL_BOTS_PATH/private/*; do
     echo "INSERT INTO ranking(id, botId, botName, elo) " \
     "VALUES('$rankingid','$botid','$bot', 800);" >> init.sql
 done
+shopt -u nullglob
