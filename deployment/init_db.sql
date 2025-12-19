@@ -13,14 +13,14 @@ ALTER FUNCTION load_bot(TEXT) OWNER TO postgres;
 -- TODO: WIP reduce name size
 CREATE TABLE users (id UUID PRIMARY KEY, name VARCHAR (20));
 CREATE TABLE bots (id UUID PRIMARY KEY, name VARCHAR (16), script TEXT, userId UUID REFERENCES users (id) , userName VARCHAR (20));
-CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER);
+CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER, winCount INTEGER, drawCount INTEGER, lossCount INTEGER);
 CREATE TABLE matchs (id UUID PRIMARY KEY, botId1 UUID REFERENCES bots (id), botId2 UUID REFERENCES bots (id), botName1 VARCHAR (16), botName2 VARCHAR (16), userName1 VARCHAR (20), userName2 VARCHAR (20), date TIMESTAMP, compressedGame BYTEA, score1 INTEGER, score2 INTEGER, ranked BOOLEAN);
 
 GRANT SELECT ON TABLE bots TO referee_user;
 
 GRANT SELECT ON TABLE bots TO matchmaker_user;
 GRANT SELECT ON TABLE users TO matchmaker_user;
-GRANT SELECT, INSERT ON TABLE ranking TO matchmaker_user;
+GRANT SELECT, INSERT, UPDATE ON TABLE ranking TO matchmaker_user;
 GRANT SELECT, INSERT ON TABLE matchs TO matchmaker_user;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bots TO rglua_user;

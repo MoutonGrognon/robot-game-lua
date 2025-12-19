@@ -14,6 +14,9 @@ EXAMPLES_NAME='Examples'
 
 echo "INSERT INTO users(id, name) VALUES('$EXAMPLES_ID', '$EXAMPLES_NAME');" >> init.sql
 
+# TODO: get from conf
+default_elo=1000
+
 LOCAL_BOTS_PATH="../bots"
 DOCKER_BOTS_FOLDER="/bots"
 
@@ -22,11 +25,11 @@ for path in $LOCAL_BOTS_PATH/public/*.lua $LOCAL_BOTS_PATH/private/*.lua; do
     filename=${path##*/}
     bot=${filename%.lua}
     path_in_docker="$DOCKER_BOTS_FOLDER/$filename"
-    botid=`uuidgen`
+    bot_id=`uuidgen`
     echo "INSERT INTO bots(id, name, script, userId, userName) " \
-    "VALUES('$botid', '$bot', load_bot(CAST('$path_in_docker' AS TEXT)), '$EXAMPLES_ID', '$EXAMPLES_NAME');" >> init.sql
-    rankingid=`uuidgen`
-    echo "INSERT INTO ranking(id, botId, botName, elo) " \
-    "VALUES('$rankingid','$botid','$bot', 800);" >> init.sql
+    "VALUES('$bot_id', '$bot', load_bot(CAST('$path_in_docker' AS TEXT)), '$EXAMPLES_ID', '$EXAMPLES_NAME');" >> init.sql
+    ranking_id=`uuidgen`
+    echo "INSERT INTO ranking(id, botId, botName, elo, winCount, drawCount, lossCount) " \
+    "VALUES('$ranking_id','$bot_id','$bot', '$default_elo', 0, 0, 0);" >> init.sql
 done
 shopt -u nullglob

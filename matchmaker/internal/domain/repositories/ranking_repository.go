@@ -4,4 +4,5 @@ import "github.com/MoutonGrognon/robot-game-lua/matchmaker/internal/domain/entit
 
 type RankingRepository interface {
 	GetRanking() ([]entities.Rank, error)
+	UpdateRank(entities.Rank) error
 }
