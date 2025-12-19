@@ -12,10 +12,10 @@ import (
 )
 
 type PlayerController struct {
-	playerService services.PlayerService
+	playerService *services.PlayerService
 }
 
-func NewPlayerController(e *echo.Echo, playerService services.PlayerService) *PlayerController {
+func NewPlayerController(e *echo.Echo, playerService *services.PlayerService) *PlayerController {
 	controller := &PlayerController{
 		playerService: playerService,
 	}

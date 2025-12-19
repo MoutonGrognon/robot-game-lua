@@ -18,8 +18,8 @@ type PlayerService struct {
 	Running bool
 }
 
-func NewPlayerService() PlayerService {
-	return PlayerService{
+func NewPlayerService() *PlayerService {
+	return &PlayerService{
 		L:       nil,
 		Running: false,
 	}

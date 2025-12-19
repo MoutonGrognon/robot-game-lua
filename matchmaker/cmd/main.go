@@ -36,8 +36,9 @@ func main() {
 
 	botRepo := db.NewBotRepository(postgresDb)
 	matchRepo := db.NewMatchRepository(postgresDb)
+	rankingRepo := db.NewRankingRepository(postgresDb)
 
-	matchmakerService := services.NewMatchmakerService(botRepo, matchRepo)
+	matchmakerService := services.NewMatchmakerService(botRepo, matchRepo, rankingRepo)
 	controllers.NewMatchmakerController(e, matchmakerService)
 
 	e.Logger.Fatal(e.Start(":" + strconv.Itoa(PORT)))

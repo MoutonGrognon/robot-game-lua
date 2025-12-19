@@ -42,8 +42,9 @@ const MATCH_TIMEOUT = 2 *
 type MatchmakerService struct {
 	botRepo           repositories.BotRepository
 	matchRepo         repositories.MatchRepository
+	rankingRepo       repositories.RankingRepository
 	refereeMS         external.RefereeMS
-	matchQueue        entities.MatchQueue
+	matchQueue        *entities.MatchQueue
 	isRunning         bool
 	currentMatch      *entities.PendingMatch
 	debounceTimer     *time.Timer
@@ -51,18 +52,28 @@ type MatchmakerService struct {
 	forcedRankedMatch bool
 	rankedMatchTimer  *time.Timer
 	rankedMu          sync.Mutex
+	ranks             []entities.Rank
 }
 
-func NewMatchmakerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository) MatchmakerService {
-	matchmakerService := MatchmakerService{
+func NewMatchmakerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository, rankingRepo repositories.RankingRepository) *MatchmakerService {
+	matchmakerService := &MatchmakerService{
 		botRepo:           botRepo,
 		matchRepo:         matchRepo,
+		rankingRepo:       rankingRepo,
 		refereeMS:         rest.NewRefereeMS(),
 		matchQueue:        entities.NewMatchQueue(),
 		isRunning:         false,
 		forcedRankedMatch: true,
 		currentMatch:      &entities.PendingMatch{},
 	}
+	ranks, err := matchmakerService.rankingRepo.GetRanking()
+	for err != nil {
+		fmt.Printf("Error: %v\n", err)
+		fmt.Println("Wait 1s and retry ...")
+		time.Sleep(1 * time.Second)
+		ranks, err = matchmakerService.rankingRepo.GetRanking()
+	}
+	matchmakerService.ranks = ranks
 	matchmakerService.forceDebouncedRankedMatch()
 	go func() {
 		err := matchmakerService.StartDebouncedMatch()

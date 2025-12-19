@@ -24,8 +24,8 @@ type RefereeService struct {
 	mu           sync.Mutex
 }
 
-func NewRefereeService(botRepo repositories.BotRepository) RefereeService {
-	return RefereeService{
+func NewRefereeService(botRepo repositories.BotRepository) *RefereeService {
+	return &RefereeService{
 		matchId:      uuid.Nil,
 		botRepo:      botRepo,
 		playerMS:     rest.NewPlayerMS(),

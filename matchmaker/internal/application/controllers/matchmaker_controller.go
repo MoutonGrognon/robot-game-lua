@@ -11,10 +11,10 @@ import (
 )
 
 type MatchmakerController struct {
-	matchmakerService services.MatchmakerService
+	matchmakerService *services.MatchmakerService
 }
 
-func NewMatchmakerController(e *echo.Echo, matchmakerService services.MatchmakerService) *MatchmakerController {
+func NewMatchmakerController(e *echo.Echo, matchmakerService *services.MatchmakerService) *MatchmakerController {
 	controller := &MatchmakerController{
 		matchmakerService: matchmakerService,
 	}

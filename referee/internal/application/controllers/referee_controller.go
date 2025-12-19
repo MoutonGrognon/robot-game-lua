@@ -11,10 +11,10 @@ import (
 )
 
 type RefereeController struct {
-	refereeService services.RefereeService
+	refereeService *services.RefereeService
 }
 
-func NewRefereeController(e *echo.Echo, refereeService services.RefereeService) *RefereeController {
+func NewRefereeController(e *echo.Echo, refereeService *services.RefereeService) *RefereeController {
 	controller := &RefereeController{
 		refereeService: refereeService,
 	}

@@ -12,10 +12,10 @@ import (
 )
 
 type BouncerController struct {
-	bouncerService services.BouncerService
+	bouncerService *services.BouncerService
 }
 
-func NewBouncerController(e *echo.Echo, bouncerService services.BouncerService) *BouncerController {
+func NewBouncerController(e *echo.Echo, bouncerService *services.BouncerService) *BouncerController {
 	controller := &BouncerController{
 		bouncerService: bouncerService,
 	}

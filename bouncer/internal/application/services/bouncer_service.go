@@ -24,8 +24,8 @@ type BouncerService struct {
 	highlightedMatch *entities.Match
 }
 
-func NewBouncerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository) BouncerService {
-	return BouncerService{
+func NewBouncerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository) *BouncerService {
+	return &BouncerService{
 		botRepo:      botRepo,
 		matchRepo:    matchRepo,
 		matchmakerMS: rest.NewMatchmakerMS(),

@@ -49,8 +49,8 @@ func (q *MatchQueue) Push(pendingMatch PendingMatch) bool {
 	return true
 }
 
-func NewMatchQueue() MatchQueue {
-	return MatchQueue{
+func NewMatchQueue() *MatchQueue {
+	return &MatchQueue{
 		pendingMatchs: [QUEUE_SIZE]PendingMatch{},
 		index:         0,
 		length:        0,
