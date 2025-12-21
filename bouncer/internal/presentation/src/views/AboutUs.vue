@@ -3,7 +3,7 @@ import Title from '@/components/Title.vue'
 </script>
 
 <template>
-  <!-- TODO: WIP -->
+  <!-- TODO: add misc infos -->
   <Title title="About" />
   <div class="main">
     <p>

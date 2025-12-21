@@ -22,7 +22,7 @@ services:
       retries: 10
       start_period: 20s
 
-  # TODO: WIP enable/disable depending on env var for dev/prod
+  # TODO: enable/disable depending on env var for dev/prod
   adminer:
     image: adminer:latest
     restart: unless-stopped

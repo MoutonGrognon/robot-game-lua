@@ -10,7 +10,7 @@
   import { fab } from '@fortawesome/free-brands-svg-icons';
   library.add(fas, far, fab);
 
-  // TODO: WIP type
+  // TODO: type
   const props = defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     game: { turns: any[] },
@@ -61,7 +61,7 @@
   const grid = computed(() => {
     const computedGrid = Array.from({ length: gridSize }, () => Array(gridSize));
     if (turn.value >= 0 && props.game?.turns && props.game.turns.length && props.game.turns.length > turn.value) {
-      // TODO: WIP type
+      // TODO: type
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Object.values(props.game.turns[turn.value]).forEach((tile: any) => {
         computedGrid[tile.Bot.X][tile.Bot.Y] = tile
@@ -75,13 +75,13 @@
     return (x - center) ** 2 + (y - center) ** 2
   }
 
-  // TODO: WIP type
+  // TODO: type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function getBot(grid: any[][], x: number, y: number): any {
     return grid?.[x - 1]?.[y - 1]?.Bot
   }
 
-  // TODO: WIP type
+  // TODO: type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function getAction(grid: any[][], x: number, y: number): any {
     return grid?.[x - 1]?.[y - 1]?.Action

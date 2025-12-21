@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 
 	"github.com/MoutonGrognon/robot-game-lua/matchmaker/internal/domain/entities"
@@ -27,14 +26,4 @@ func (mr *MatchRepository) Save(match entities.Match) error {
 	}
 	_, err = stmt.Exec(match.Id, match.BotId1, match.BotId2, match.BotName1, match.BotName2, match.UserName1, match.UserName2, match.Date, match.CompressedGame, match.Score1, match.Score2, match.Ranked)
 	return err
-}
-
-func (mr *MatchRepository) GetById(id uuid.UUID) (entities.Match, error) {
-	var match entities.Match
-	stmt, err := mr.db.Prepare("SELECT * FROM matchs WHERE id=$1")
-	if err != nil {
-		return match, err
-	}
-	err = stmt.QueryRow(id).Scan(&match.Id, &match.BotId1, &match.BotId2, &match.BotName1, &match.BotName2, &match.UserName1, &match.UserName2, &match.Date, &match.CompressedGame, &match.Score1, &match.Score2, &match.Ranked)
-	return match, err
 }

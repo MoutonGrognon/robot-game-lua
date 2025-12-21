@@ -5,7 +5,7 @@ import { useZstdStore } from './zstd';
 export const useGameStore = defineStore('game', () => {
   const zstd = useZstdStore();
 
-  // TODO: WIP type
+  // TODO: type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const game = shallowRef({ turns: [] as any[] });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

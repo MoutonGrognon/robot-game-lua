@@ -3,7 +3,7 @@ import Title from '@/components/Title.vue'
 </script>
 
 <template>
-  <!-- TODO: WIP -->
+  <!-- TODO: use the README.md to generate parts of this page -->
   <Title title="Rules page currently work in progress" />
   <div class="main">
     <p>

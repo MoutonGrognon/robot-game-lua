@@ -7,13 +7,13 @@
 
   const zstd = useZstdStore();
 
-  // TODO: WIP type
+  // TODO: type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const game = shallowRef({ turns: [] as any[] });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const gameMetadata = shallowRef({} as { [key: string]: any });
 
-  // TODO: WIP
+  // TODO: use a store
   fetch("http://localhost:5555/highlighted-match", {
     headers: {
       "Accept": "application/json",
@@ -36,7 +36,6 @@
 </script>
 
 <template>
-  <!-- TODO: WIP -->
   <Title title="Welcome to Robot Game LUA" />
   <div class="welcome">
     <div class="banners">

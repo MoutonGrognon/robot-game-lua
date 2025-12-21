@@ -20,7 +20,7 @@ const (
 func main() {
 	e := echo.New()
 
-	// TODO: WIP only for dev
+	// TODO: only for dev
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:5173"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},

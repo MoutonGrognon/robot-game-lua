@@ -16,7 +16,6 @@ export const mainRoutes: RouteRecordRaw[] = [
   //   // which is lazy-loaded when the route is visited.
   //   component: () => import('../views/Ranking.vue'),
   // },
-  // TODO: WIP
   {
     path: '/matchs',
     name: 'Matchs',

@@ -9,7 +9,7 @@
   import { fab } from '@fortawesome/free-brands-svg-icons';
   library.add(fas, far, fab);
 
-  // TODO: WIP type
+  // TODO: type
   const props = defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     preview: any;
@@ -29,7 +29,6 @@
 </script>
 
 <template>
-  <!-- TODO: WIP navigate to full match display -->
   <RouterLink :to="`matchs/${props.preview.Id}`" class="wrapper">
     <div class="count">{{ props.index }}</div>
     <div class="blue-name" :class="{ 'winner': trueBlueResult > 0, 'loser': trueBlueResult < 0 }">
@@ -68,7 +67,6 @@
 
   .blue-name,
   .red-name {
-    /* TODO: WIP*/
     width: 150px;
   }
 

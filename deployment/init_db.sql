@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION load_bot(path TEXT) RETURNS TEXT AS $$
 $$ LANGUAGE sql SECURITY DEFINER;
 ALTER FUNCTION load_bot(TEXT) OWNER TO postgres;
 
--- TODO: WIP reduce name size
+-- TODO: reduce name size
 CREATE TABLE users (id UUID PRIMARY KEY, name VARCHAR (20));
 CREATE TABLE bots (id UUID PRIMARY KEY, name VARCHAR (16), script TEXT, userId UUID REFERENCES users (id) , userName VARCHAR (20));
 CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER, winCount INTEGER, drawCount INTEGER, lossCount INTEGER);
