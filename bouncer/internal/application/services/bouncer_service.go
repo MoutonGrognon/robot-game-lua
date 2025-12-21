@@ -1,20 +1,15 @@
 package services
 
 import (
-<<<<<<< HEAD
-	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/domain/entities"
-	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/domain/external"
-	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/domain/repositories"
-	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/infrastructure/rest"
-=======
+	"math"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/domain/entities"
 	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/domain/external"
 	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/domain/repositories"
 	"github.com/MoutonGrognon/robot-game-lua/bouncer/internal/infrastructure/rest"
->>>>>>> d97a808 (feat: WIP add frontend + add highlighted match endpoint)
-	"github.com/google/uuid"
 )
 
 type BouncerService struct {
@@ -59,9 +54,13 @@ func (s *BouncerService) GetHighlightedMatch() (*entities.Match, error) {
 }
 
 func (s *BouncerService) GetHighlightedMatchDebounced() (*entities.Match, error) {
-	if s.highlightedMatch == nil || s.highlightedMatch.Date.Add(time.Hour*12).Before(time.Now()) {
-		// TODO: find some metrics to discover interesting matchs
-		summaries, _, _, _, err := s.GetSummaries(1, 1)
+	highlightDuration := time.Hour * 12
+	if s.highlightedMatch == nil || s.highlightedMatch.Date.Add(highlightDuration).Before(time.Now()) {
+		summaries, err := s.matchRepo.GetRecentSummaries(time.Now().Add(-highlightDuration))
+		if err != nil {
+			return nil, err
+		}
+		ranks, err := s.rankingRepo.GetRanking()
 		if err != nil {
 			return nil, err
 		}
@@ -69,6 +68,47 @@ func (s *BouncerService) GetHighlightedMatchDebounced() (*entities.Match, error)
 			return nil, nil
 		}
 		matchId := summaries[0].Id
+		bestHighlightScore := math.MinInt
+		eloById := map[uuid.UUID]int{}
+		for _, summary := range summaries {
+			elo1, elo1Found := eloById[summary.BotId1]
+			elo2, elo2Found := eloById[summary.BotId2]
+			if !elo1Found {
+				for _, rank := range ranks {
+					if rank.BotId == summary.BotId1 {
+						eloById[rank.BotId] = elo1
+						elo1, elo1Found = eloById[summary.BotId1]
+						break
+					}
+				}
+			}
+			if !elo2Found {
+				for _, rank := range ranks {
+					if rank.BotId == summary.BotId2 {
+						eloById[rank.BotId] = elo2
+						elo2, elo2Found = eloById[summary.BotId2]
+						break
+					}
+				}
+			}
+			if !elo1Found || !elo2Found {
+				continue
+			}
+			lowElo := elo1
+			highElo := elo2
+			if elo1 > elo2 {
+				lowElo = elo2
+				highElo = elo1
+			}
+			scoreDifference := summary.Score1 - summary.Score2
+			// Arbitrary formula to get high elo but low elo difference,
+			// while having a close match (low score difference)
+			highlightScore := 3*lowElo - highElo - scoreDifference*scoreDifference
+			if highlightScore > bestHighlightScore {
+				bestHighlightScore = highlightScore
+				matchId = summary.Id
+			}
+		}
 		match, err := s.GetMatch(matchId)
 		if err != nil {
 			return nil, err

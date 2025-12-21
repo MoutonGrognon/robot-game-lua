@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -62,4 +63,30 @@ func (mr *MatchRepository) GetSummaries(start int, size int) ([]entities.MatchSu
 	row := mr.db.QueryRow("SELECT count FROM matchs_count")
 	row.Scan(&total)
 	return matchs, start, size, total, err
+}
+
+func (mr *MatchRepository) GetRecentSummaries(dateThreshold time.Time) ([]entities.MatchSummary, error) {
+	var matchs []entities.MatchSummary
+	stmt, err := mr.db.Prepare("SELECT id, botId1, botId2, botName1, botName2, userName1, userName2, date, score1, score2, ranked FROM matchs WHERE date>=$1")
+	if err != nil {
+		return matchs, err
+	}
+	rows, err := stmt.Query(dateThreshold)
+	if err != nil {
+		return matchs, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var match entities.MatchSummary
+		err = rows.Scan(&match.Id, &match.BotId1, &match.BotId2, &match.BotName1, &match.BotName2, &match.UserName1, &match.UserName2, &match.Date, &match.Score1, &match.Score2, &match.Ranked)
+		if err != nil {
+			return matchs, err
+		}
+		matchs = append(matchs, match)
+	}
+	err = rows.Err()
+	if err != nil {
+		return matchs, err
+	}
+	return matchs, err
 }
