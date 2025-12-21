@@ -33,3 +33,5 @@ for path in $LOCAL_BOTS_PATH/public/*.lua $LOCAL_BOTS_PATH/private/*.lua; do
     "VALUES('$ranking_id','$bot_id','$bot', '$default_elo', 0, 0, 0);" >> init.sql
 done
 shopt -u nullglob
+
+echo "DROP FUNCTION load_bot;" >> init.sql
