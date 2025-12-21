@@ -8,7 +8,6 @@
   const page = ref({ start: 1, size: 10, last: -1, elements: undefined });
 
   function fetchPagination(): void {
-    // TODO: WIP
     fetch(`http://localhost:5555/matchs?start=${page.value.start}&size=${page.value.size}`, {
       headers: {
         "Accept": "application/json",
@@ -17,8 +16,7 @@
     }).then(resp => {
       resp.json().then(matchsResp => {
         if (matchsResp.summaries) {
-          // TODO: WIP
-          page.value = { ...page.value, elements: matchsResp.summaries, last: 1 };
+          page.value = { ...page.value, elements: matchsResp.summaries, last: Math.ceil(matchsResp.total / matchsResp.size) + 1  };
         }
       });
     });
@@ -35,7 +33,7 @@
   }
 
   function updatePaginationSize(size: number): void {
-    updatePage({ ...page.value, size })
+    updatePage({ ...page.value, size, start: 1 })
   }
 
   fetchPagination()
@@ -43,7 +41,6 @@
 
 <template>
   <Title title="Matchs" />
-
   <Pagination :page="page" @updatePaginationSize="updatePaginationSize" @updatePaginationStart="updatePaginationStart">
     <template #data="{ index }">
       <MatchPreview :index="page.start + index - 1" :preview="page.elements?.[index - 1]"

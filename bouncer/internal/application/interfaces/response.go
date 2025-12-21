@@ -10,4 +10,7 @@ type GetMatchResponse struct {
 
 type GetSummariesResponse struct {
 	Summaries []entities.MatchSummary `json:"summaries"`
+	Start     int                     `json:"start"`
+	Size      int                     `json:"size"`
+	Total     int                     `json:"total"`
 }

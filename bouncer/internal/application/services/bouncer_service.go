@@ -40,7 +40,7 @@ func (s *BouncerService) GetMatch(matchId uuid.UUID) (entities.Match, error) {
 	return s.matchRepo.GetById(matchId)
 }
 
-func (s *BouncerService) GetSummaries(start int, size int) ([]entities.MatchSummary, error) {
+func (s *BouncerService) GetSummaries(start int, size int) ([]entities.MatchSummary, int, int, int, error) {
 	return s.matchRepo.GetSummaries(start, size)
 }
 
@@ -55,7 +55,7 @@ func (s *BouncerService) GetHighlightedMatch() (*entities.Match, error) {
 func (s *BouncerService) GetHighlightedMatchDebounced() (*entities.Match, error) {
 	if s.highlightedMatch == nil || s.highlightedMatch.Date.Add(time.Hour*12).Before(time.Now()) {
 		// TODO: find some metrics to discover interesting matchs
-		summaries, err := s.GetSummaries(1, 1)
+		summaries, _, _, _, err := s.GetSummaries(1, 1)
 		if err != nil {
 			return nil, err
 		}

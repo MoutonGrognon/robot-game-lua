@@ -67,13 +67,16 @@ func (bc *BouncerController) GetSummaries(c echo.Context) error {
 		fmt.Printf("Error: %v\n", err)
 		return c.String(http.StatusBadRequest, "Bad Request")
 	}
-	summaries, err := bc.bouncerService.GetSummaries(getSummariesRequest.Start, getSummariesRequest.Size)
+	summaries, start, size, total, err := bc.bouncerService.GetSummaries(getSummariesRequest.Start, getSummariesRequest.Size)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return c.String(http.StatusInternalServerError, "Internal Error")
 	}
 	getSummariesResponse := &interfaces.GetSummariesResponse{
 		Summaries: summaries,
+		Start:     start,
+		Size:      size,
+		Total:     total,
 	}
 	return c.JSON(http.StatusOK, getSummariesResponse)
 }

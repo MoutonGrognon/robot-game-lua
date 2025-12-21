@@ -15,6 +15,28 @@ CREATE TABLE users (id UUID PRIMARY KEY, name VARCHAR (20));
 CREATE TABLE bots (id UUID PRIMARY KEY, name VARCHAR (16), script TEXT, userId UUID REFERENCES users (id) , userName VARCHAR (20));
 CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER, winCount INTEGER, drawCount INTEGER, lossCount INTEGER);
 CREATE TABLE matchs (id UUID PRIMARY KEY, botId1 UUID REFERENCES bots (id), botId2 UUID REFERENCES bots (id), botName1 VARCHAR (16), botName2 VARCHAR (16), userName1 VARCHAR (20), userName2 VARCHAR (20), date TIMESTAMP, compressedGame BYTEA, score1 INTEGER, score2 INTEGER, ranked BOOLEAN);
+-- Make pagination more efficient for matchs
+CREATE TABLE matchs_count (count BIGINT);
+
+CREATE OR REPLACE FUNCTION matchs_count_update() RETURNS trigger AS $$
+  BEGIN
+    IF TG_OP = 'INSERT' THEN
+      UPDATE matchs_count SET count = count + 1;
+      RETURN NEW;
+    END IF;
+    IF TG_OP = 'DELETE' THEN
+      UPDATE matchs_count SET count = count - 1;
+      RETURN OLD;
+    END IF;
+    RETURN NULL;
+  END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE CONSTRAINT TRIGGER matchs_count_trigger 
+  AFTER INSERT OR DELETE on matchs
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW
+    EXECUTE PROCEDURE matchs_count_update();
 
 GRANT SELECT ON TABLE bots TO referee_user;
 
@@ -23,7 +45,11 @@ GRANT SELECT ON TABLE users TO matchmaker_user;
 GRANT SELECT, INSERT, UPDATE ON TABLE ranking TO matchmaker_user;
 GRANT SELECT, INSERT ON TABLE matchs TO matchmaker_user;
 
+-- TODO: add bouncer user
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bots TO rglua_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO rglua_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE ranking TO rglua_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE matchs TO rglua_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE matchs_count TO rglua_user;
+
+INSERT INTO matchs_count(count) VALUES (0);
