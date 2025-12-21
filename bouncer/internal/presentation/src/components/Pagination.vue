@@ -54,7 +54,7 @@ function getStartIndexFromPageIndex(pageIndex: number): number {
       <div v-if="page.last - 3 > currentPage">...</div>
       <div v-if="currentPage !== page.last" class="row">
         <button class="button" @click="$emit('updatePaginationStart', getStartIndexFromPageIndex(page.last))">{{ page.last }}</button>
-        <button class="button" @click="$emit('updatePaginationStart', getStartIndexFromPageIndex(currentPage + 1)">
+        <button class="button" @click="$emit('updatePaginationStart', getStartIndexFromPageIndex(currentPage + 1))">
           next
         </button>
       </div>
