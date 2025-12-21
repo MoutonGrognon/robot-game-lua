@@ -14,3 +14,7 @@ type GetSummariesResponse struct {
 	Size      int                     `json:"size"`
 	Total     int                     `json:"total"`
 }
+
+type GetRankingResponse struct {
+	Ranking []entities.Rank `json:"ranking"`
+}

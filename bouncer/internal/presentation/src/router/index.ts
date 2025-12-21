@@ -7,15 +7,14 @@ export const mainRoutes: RouteRecordRaw[] = [
     name: 'Home',
     component: Home,
   },
-  // TODO: WIP
-  // {
-  //   path: '/ranking',
-  //   name: 'Ranking',
-  //   // route level code-splitting
-  //   // this generates a separate chunk for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import('../views/Ranking.vue'),
-  // },
+  {
+    path: '/ranking',
+    name: 'Ranking',
+    // route level code-splitting
+    // this generates a separate chunk for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import('../views/Ranking.vue'),
+  },
   {
     path: '/matchs',
     name: 'Matchs',

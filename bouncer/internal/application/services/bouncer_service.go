@@ -20,14 +20,16 @@ import (
 type BouncerService struct {
 	botRepo          repositories.BotRepository
 	matchRepo        repositories.MatchRepository
+	rankingRepo      repositories.RankingRepository
 	matchmakerMS     external.MatchmakerMS
 	highlightedMatch *entities.Match
 }
 
-func NewBouncerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository) *BouncerService {
+func NewBouncerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository, rankingRepo repositories.RankingRepository) *BouncerService {
 	return &BouncerService{
 		botRepo:      botRepo,
 		matchRepo:    matchRepo,
+		rankingRepo:  rankingRepo,
 		matchmakerMS: rest.NewMatchmakerMS(),
 	}
 }
@@ -42,6 +44,10 @@ func (s *BouncerService) GetMatch(matchId uuid.UUID) (entities.Match, error) {
 
 func (s *BouncerService) GetSummaries(start int, size int) ([]entities.MatchSummary, int, int, int, error) {
 	return s.matchRepo.GetSummaries(start, size)
+}
+
+func (s *BouncerService) GetRanking() ([]entities.Rank, error) {
+	return s.rankingRepo.GetRanking()
 }
 
 func (s *BouncerService) GetHighlightedMatch() (*entities.Match, error) {

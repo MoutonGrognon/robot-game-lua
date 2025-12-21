@@ -23,6 +23,7 @@ func NewBouncerController(e *echo.Echo, bouncerService *services.BouncerService)
 	e.GET("/match/:id", controller.GetMatch)
 	e.GET("/highlighted-match", controller.GetHighlightedMatch)
 	e.GET("/matchs", controller.GetSummaries)
+	e.GET("/ranking", controller.GetRanking)
 	e.POST("/request-match", controller.AddMatchToQueue)
 
 	return controller
@@ -79,6 +80,18 @@ func (bc *BouncerController) GetSummaries(c echo.Context) error {
 		Total:     total,
 	}
 	return c.JSON(http.StatusOK, getSummariesResponse)
+}
+
+func (bc *BouncerController) GetRanking(c echo.Context) error {
+	ranking, err := bc.bouncerService.GetRanking()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return c.String(http.StatusInternalServerError, "Internal Error")
+	}
+	getRankingResponse := &interfaces.GetRankingResponse{
+		Ranking: ranking,
+	}
+	return c.JSON(http.StatusOK, getRankingResponse)
 }
 
 func (bc *BouncerController) AddMatchToQueue(c echo.Context) error {

@@ -43,8 +43,9 @@ func main() {
 
 	botRepo := db.NewBotRepository(postgresDb)
 	matchRepo := db.NewMatchRepository(postgresDb)
+	rankingRepo := db.NewRankingRepository(postgresDb)
 
-	bouncerService := services.NewBouncerService(botRepo, matchRepo)
+	bouncerService := services.NewBouncerService(botRepo, matchRepo, rankingRepo)
 	controllers.NewBouncerController(e, bouncerService)
 
 	// Serve frontend
