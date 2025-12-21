@@ -4,7 +4,7 @@
   import Pagination from '@/components/Pagination.vue';
   import MatchPreview from '@/components/MatchPreview.vue';
 
-  // TODO: WIP type
+  // TODO: type
   const page = ref({ start: 1, size: 10, last: -1, elements: undefined });
 
   function fetchPagination(): void {
@@ -12,11 +12,13 @@
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
+        // match list is updated frequently, cache create UI inconsistencies
+        "cache": "no-store"
       }
     }).then(resp => {
       resp.json().then(matchsResp => {
         if (matchsResp.summaries) {
-          page.value = { ...page.value, elements: matchsResp.summaries, last: Math.ceil(matchsResp.total / matchsResp.size) + 1  };
+          page.value = { ...page.value, elements: matchsResp.summaries, last: Math.ceil(matchsResp.total / matchsResp.size) };
         }
       });
     });
