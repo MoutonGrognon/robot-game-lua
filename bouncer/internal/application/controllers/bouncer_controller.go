@@ -22,7 +22,7 @@ func NewBouncerController(e *echo.Echo, bouncerService *services.BouncerService)
 
 	e.GET("/match/:id", controller.GetMatch)
 	e.GET("/highlighted-match", controller.GetHighlightedMatch)
-	e.GET("/matchs", controller.GetSummaries)
+	e.GET("/matches", controller.GetSummaries)
 	e.GET("/ranking", controller.GetRanking)
 	e.POST("/request-match", controller.AddMatchToQueue)
 

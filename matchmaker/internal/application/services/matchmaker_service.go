@@ -204,7 +204,7 @@ func (s *MatchmakerService) chooseBots() (string, string, error) {
 	// until it reaches the same match count as the other,
 	// which will be quite boring
 
-	// Choose the bot that played the least amount of matchs
+	// Choose the bot that played the least amount of matches
 	for rankIndex, rank := range s.ranks {
 		if s.matchCount(rank) < s.matchCount(s.ranks[blueIndex]) {
 			blueIndex = rankIndex
@@ -251,7 +251,7 @@ func (s *MatchmakerService) chooseBots() (string, string, error) {
 		// Arbitrary formula that benefits to match causing high
 		// elo variation (probably improving convergence speed ?)
 		// while giving less chances to bots that have already played
-		// a lot of matchs
+		// a lot of matches
 		relevanceScore := eloVariationEsperance / float64(lowMatchCountFactor)
 		if relevanceScore > bestRelevanceScore {
 			redIndex = rankIndex

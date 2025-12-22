@@ -8,10 +8,10 @@ import (
 const QUEUE_SIZE = 10
 
 type MatchQueue struct {
-	pendingMatchs [QUEUE_SIZE]PendingMatch
-	index         int
-	length        int
-	mu            sync.Mutex
+	pendingMatches [QUEUE_SIZE]PendingMatch
+	index          int
+	length         int
+	mu             sync.Mutex
 }
 
 func (q *MatchQueue) IsFull() bool {
@@ -32,7 +32,7 @@ func (q *MatchQueue) Pop() (PendingMatch, error) {
 	if q.length == 0 {
 		return PendingMatch{}, errors.New("Empty queue")
 	}
-	pendingMatch := q.pendingMatchs[(q.index+QUEUE_SIZE-q.length)%QUEUE_SIZE]
+	pendingMatch := q.pendingMatches[(q.index+QUEUE_SIZE-q.length)%QUEUE_SIZE]
 	q.length -= 1
 	return pendingMatch, nil
 }
@@ -44,15 +44,15 @@ func (q *MatchQueue) Push(pendingMatch PendingMatch) bool {
 		return false
 	}
 	q.length += 1
-	q.pendingMatchs[q.index] = pendingMatch
+	q.pendingMatches[q.index] = pendingMatch
 	q.index = (q.index + 1) % QUEUE_SIZE
 	return true
 }
 
 func NewMatchQueue() *MatchQueue {
 	return &MatchQueue{
-		pendingMatchs: [QUEUE_SIZE]PendingMatch{},
-		index:         0,
-		length:        0,
+		pendingMatches: [QUEUE_SIZE]PendingMatch{},
+		index:          0,
+		length:         0,
 	}
 }

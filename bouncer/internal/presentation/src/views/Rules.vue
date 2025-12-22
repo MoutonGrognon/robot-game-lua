@@ -23,7 +23,7 @@ import Title from '@/components/Title.vue'
       <li><code>SUICIDE</code> : dies but deals damage to adjacent tiles.</li>
     </ul>
     <p>
-      There are no friendly damage (collison, attack and suicide only deal damage to enemy
+      There are no friendly damage (collision, attack and suicide only deal damage to enemy
       robots).<br />
       They are several waves in which robots spawn randomly, The team that have more robots at the
       end of the game wins.
@@ -39,7 +39,17 @@ import Title from '@/components/Title.vue'
 .main {
   padding: 24px;
 }
+.main {
+  padding: 24px;
+}
 
+code {
+  background-color: black;
+  color: #00ff41;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-radius: 2px;
+}
 code {
   background-color: black;
   color: #00ff41;

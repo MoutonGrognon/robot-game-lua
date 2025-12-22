@@ -19,9 +19,9 @@ func NewRankingRepository(db *sql.DB) repositories.RankingRepository {
 	}
 }
 
-func (br *RankingRepository) GetRanking() ([]entities.Rank, error) {
+func (rr *RankingRepository) GetRanking() ([]entities.Rank, error) {
 	var ranks []entities.Rank
-	stmt, err := br.db.Prepare("SELECT id, botId, botName, elo, winCount, drawCount, lossCount FROM ranking")
+	stmt, err := rr.db.Prepare("SELECT id, botId, botName, elo, winCount, drawCount, lossCount FROM ranking")
 	if err != nil {
 		return ranks, err
 	}
@@ -42,8 +42,8 @@ func (br *RankingRepository) GetRanking() ([]entities.Rank, error) {
 	return ranks, err
 }
 
-func (br *RankingRepository) UpdateRank(rank entities.Rank) error {
-	stmt, err := br.db.Prepare("INSERT INTO ranking (id, botId, botName, elo, winCount, drawCount, lossCount) VALUES($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO UPDATE SET elo = EXCLUDED.elo, winCount = EXCLUDED.winCount, drawCount = EXCLUDED.drawCount, lossCount = EXCLUDED.lossCount;")
+func (rr *RankingRepository) UpdateRank(rank entities.Rank) error {
+	stmt, err := rr.db.Prepare("INSERT INTO ranking (id, botId, botName, elo, winCount, drawCount, lossCount) VALUES($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO UPDATE SET elo = EXCLUDED.elo, winCount = EXCLUDED.winCount, drawCount = EXCLUDED.drawCount, lossCount = EXCLUDED.lossCount;")
 	if err != nil {
 		return err
 	}
