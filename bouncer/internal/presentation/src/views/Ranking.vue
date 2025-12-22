@@ -20,14 +20,14 @@ function fetchRanking(): void {
     resp.json().then(rankingResp => {
       if (rankingResp.ranking) {
         // TODO: type
-        const sortedRanking = rankingResp.ranking.toSorted((rankA: any, rankB: any) => rankB.Elo - rankA.Elo);
+        const sortedRanking = rankingResp.ranking.toSorted((rankA: any, rankB: any) => rankB.elo - rankA.elo);
         // TODO: type
         const elements = sortedRanking.reduce((ranking: any[], rank: any) => {
           const prevRank = ranking.length > 0 ? ranking[ranking.length - 1] : undefined;
-          const prevElo = prevRank?.Elo ?? null;
+          const prevElo = prevRank?.elo ?? null;
           ranking.push({
             ...rank,
-            rank: rank.Elo === prevElo ? prevRank.rank : ranking.length + 1
+            rank: rank.elo === prevElo ? prevRank.rank : ranking.length + 1
           });
           return ranking;
         }, []);

@@ -8,26 +8,26 @@ import "C"
 type (
 	ActionType int
 	Action     struct {
-		ActionType ActionType
-		X          int
-		Y          int
+		ActionType ActionType `json:"actionType"`
+		X          int        `json:"x"`
+		Y          int        `json:"y"`
 	}
 
 	Location struct {
-		X int
-		Y int
+		X int `json:"x"`
+		Y int `json:"y"`
 	}
 	LocationType int
 
 	Bot struct {
-		X        int
-		Y        int
-		Hp       int
-		Id       int
-		PlayerId int
+		X        int `json:"x"`
+		Y        int `json:"y"`
+		Hp       int `json:"hp"`
+		Id       int `json:"id"`
+		PlayerId int `json:"playerId"`
 	}
 	BotState struct {
-		Bot    Bot
-		Action Action
+		Bot    Bot    `json:"bot"`
+		Action Action `json:"action"`
 	}
 )

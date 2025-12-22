@@ -1,6 +1,6 @@
 package entities
 
 type Bot struct {
-	Name   string
-	Script string
+	Name   string `json:"name"`
+	Script string `json:"script"`
 }

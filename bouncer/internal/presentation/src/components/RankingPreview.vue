@@ -11,10 +11,10 @@ const props = defineProps<{
     <div class="wrapper">
         <div class="count">{{ preview.rank }}</div>
         <div class="elo">
-            {{ preview.Elo }}
+            {{ preview.elo }}
         </div>
         <div class="name">
-            {{ preview.BotName }}
+            {{ preview.botName }}
         </div>
     </div>
 </template>

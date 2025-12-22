@@ -20,7 +20,7 @@ watch(
     if (newId !== oldId || !gameId.value.length) {
       gameId.value = newId;
     }
-    if (gameStore.gameMetadata?.Id !== gameId.value) {
+    if (gameStore.gameMetadata?.id !== gameId.value) {
       gameStore.resetGame();
       gameStore.loadGame(gameId.value)
     }
@@ -28,7 +28,7 @@ watch(
   { immediate: true }
 )
 
-const subtitle = computed(() => `${gameStore.gameMetadata?.BotName1} VS ${gameStore.gameMetadata?.BotName2}`)
+const subtitle = computed(() => `${gameStore.gameMetadata?.botName1} VS ${gameStore.gameMetadata?.botName2}`)
 </script>
 
 <template>

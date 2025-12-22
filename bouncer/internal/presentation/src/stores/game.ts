@@ -9,11 +9,11 @@ export const useGameStore = defineStore('game', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const game = shallowRef({ turns: [] as any[] });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const gameMetadata = shallowRef({ Id: undefined } as {[key: string]: any});
+  const gameMetadata = shallowRef({ id: undefined } as {[key: string]: any});
 
   function resetGame(): void {
     game.value = { turns: [] };
-    gameMetadata.value = { Id: undefined }
+    gameMetadata.value = { id: undefined }
   }
 
   function loadGame(id: string): void {
@@ -25,9 +25,9 @@ export const useGameStore = defineStore('game', () => {
     }).then(resp => resp.json())
       .then(matchResp => {
         if (matchResp?.match) {
-          const { CompressedGame, ...metadata } = matchResp.match;
+          const { compressedGame, ...metadata } = matchResp.match;
           gameMetadata.value = { ...metadata };
-          const bytes = Uint8Array.from(atob(CompressedGame), c => c.charCodeAt(0));
+          const bytes = Uint8Array.from(atob(compressedGame), c => c.charCodeAt(0));
           const utf8Decode = new TextDecoder();
           zstd.initialize().then(() => {
             const payload = utf8Decode.decode(zstd.decompress(bytes));
