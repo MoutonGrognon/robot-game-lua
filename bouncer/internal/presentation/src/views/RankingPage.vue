@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Title from '@/components/Title.vue';
-import Pagination from '@/components/Pagination.vue';
+import PageTitle from '@/components/PageTitle.vue';
+import PaginatedList from '@/components/PaginatedList.vue';
 import RankingPreview from '@/components/RankingPreview.vue';
 
 // TODO: type
@@ -54,8 +54,9 @@ fetchRanking();
 </script>
 
 <template>
-  <Title title="Ranking" />
-  <Pagination :page="page" @updatePaginationSize="updatePaginationSize" @updatePaginationStart="updatePaginationStart">
+  <PageTitle title="Ranking" />
+  <PaginatedList :page="page" @updatePaginationSize="updatePaginationSize"
+    @updatePaginationStart="updatePaginationStart">
     <template #data="{ index }">
       <RankingPreview :index="page.start + index - 1" :preview="page.elements?.[index - 1]"
         :class="{ 'contrast': !!(index % 2) }" />
@@ -66,7 +67,7 @@ fetchRanking();
     <template v-slot:empty>
       <div>No ranking available</div>
     </template>
-  </Pagination>
+  </PaginatedList>
 
 </template>
 

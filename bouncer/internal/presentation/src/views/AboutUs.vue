@@ -1,10 +1,14 @@
 <script setup lang="ts">
+<<<<<<< HEAD
 import Title from '@/components/Title.vue'
+=======
+import PageTitle from '@/components/PageTitle.vue';
+>>>>>>> fb99ec9 (refactor: rename single word components)
 </script>
 
 <template>
   <!-- TODO: add misc infos -->
-  <Title title="About" />
+  <PageTitle title="About" />
   <div class="main">
     <p>
       The website is not finished yet, checkout the source in the

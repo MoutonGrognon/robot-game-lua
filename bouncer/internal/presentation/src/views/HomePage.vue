@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Title from '@/components/Title.vue';
-import Game from '@/components/Game.vue';
+import PageTitle from '@/components/PageTitle.vue';
+import FullGame from '@/components/FullGame.vue';
 import { shallowRef } from 'vue';
 
 import { useZstdStore } from '@/stores/zstd.ts';
@@ -36,7 +36,7 @@ fetch("http://localhost:5555/highlighted-match", {
 </script>
 
 <template>
-  <Title title="Welcome to Robot Game LUA" />
+  <PageTitle title="Welcome to Robot Game LUA" />
   <div class="welcome">
     <div class="banners">
       <div class="banner banner-left blue">
@@ -48,7 +48,7 @@ fetch("http://localhost:5555/highlighted-match", {
         <span class="user-name">{{ gameMetadata.redUserName }}</span>
       </div>
     </div>
-    <Game :game="game" :metadata="gameMetadata" />
+    <FullGame :game="game" :metadata="gameMetadata" />
   </div>
 </template>
 

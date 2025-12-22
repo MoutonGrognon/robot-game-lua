@@ -1,10 +1,14 @@
 <script setup lang="ts">
+<<<<<<< HEAD:bouncer/internal/presentation/src/views/Rules.vue
 import Title from '@/components/Title.vue'
+=======
+import PageTitle from '@/components/PageTitle.vue';
+>>>>>>> fb99ec9 (refactor: rename single word components):bouncer/internal/presentation/src/views/RulesPage.vue
 </script>
 
 <template>
   <!-- TODO: use the README.md to generate parts of this page -->
-  <Title title="Rules page currently work in progress" />
+  <PageTitle title="Rules page currently work in progress" />
   <div class="main">
     <p>
       Robot Game - Legendary Ultimate Arena is a competitive game featuring turn based battles where

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Title from '@/components/Title.vue';
-import Pagination from '@/components/Pagination.vue';
+import PageTitle from '@/components/PageTitle.vue';
+import PaginatedList from '@/components/PaginatedList.vue';
 import MatchPreview from '@/components/MatchPreview.vue';
 
 // TODO: type
@@ -42,8 +42,9 @@ fetchPagination()
 </script>
 
 <template>
-  <Title title="Matches" />
-  <Pagination :page="page" @updatePaginationSize="updatePaginationSize" @updatePaginationStart="updatePaginationStart">
+  <PageTitle title="Matches" />
+  <PaginatedList :page="page" @updatePaginationSize="updatePaginationSize"
+    @updatePaginationStart="updatePaginationStart">
     <template #data="{ index }">
       <MatchPreview :index="page.start + index - 1" :preview="page.elements?.[index - 1]"
         :class="{ 'contrast': !!(index % 2) }" />
@@ -54,7 +55,7 @@ fetchPagination()
     <template v-slot:empty>
       <div>No match available</div>
     </template>
-  </Pagination>
+  </PaginatedList>
 
 </template>
 

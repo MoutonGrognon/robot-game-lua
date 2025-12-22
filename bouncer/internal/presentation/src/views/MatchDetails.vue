@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Title from '@/components/Title.vue';
-import Game from '@/components/Game.vue';
+import PageTitle from '@/components/PageTitle.vue';
+import FullGame from '@/components/FullGame.vue';
 import { useGameStore } from '@/stores/game.ts';
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -32,8 +32,8 @@ const subtitle = computed(() => `${gameStore.gameMetadata?.blueBotName} VS ${gam
 </script>
 
 <template>
-  <Title title="Matches" :subtitles="[subtitle]" />
-  <Game :game="gameStore.game" :metadata="gameStore.gameMetadata" />
+  <PageTitle title="Matches" :subtitles="[subtitle]" />
+  <FullGame :game="gameStore.game" :metadata="gameStore.gameMetadata" />
 
 </template>
 
