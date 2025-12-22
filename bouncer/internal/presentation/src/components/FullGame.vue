@@ -1,77 +1,85 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue'
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
 
 /* import all the icons in Free Solid, Free Regular, and Brands styles */
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-library.add(fas, far, fab);
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+library.add(fas, far, fab)
 
 // TODO: type
 const props = defineProps<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  game: { turns: any[] },
+  game: { turns: any[] }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: any
-}>();
+}>()
 
 const gridRadius: number = 8.5
-const gridSize: number = (gridRadius + 1) * 2;
-const maxTurn = 100;
-const autoRunTurnDuration = 1000;
+const gridSize: number = (gridRadius + 1) * 2
+const maxTurn = 100
+const autoRunTurnDuration = 1000
 enum ActionType {
   Move,
   Attack,
   Guard,
-  Suicide
+  Suicide,
 }
-let gameLoaded = false;
-let animationDone = false;
+let gameLoaded = false
+let animationDone = false
 const animationTimeout = setTimeout(() => {
-  animationDone = true;
+  animationDone = true
   if (gameLoaded) {
-    turn.value = 0;
+    turn.value = 0
   }
-}, 1000);
-let turnTimeout: number | undefined;
+}, 1000)
+let turnTimeout: number | undefined
 
-const turn = ref(-1);
+const turn = ref(-1)
 
-watch(() => props.game, async (currentGame) => {
-  if (currentGame?.turns?.length) {
-    gameLoaded = true;
-    if (animationDone) {
-      turn.value = 0;
+watch(
+  () => props.game,
+  async (currentGame) => {
+    if (currentGame?.turns?.length) {
+      gameLoaded = true
+      if (animationDone) {
+        turn.value = 0
+      }
     }
-  }
-},
-  { immediate: true })
+  },
+  { immediate: true },
+)
 
 watch(turn, async (currentTurn) => {
   if (currentTurn < maxTurn) {
     turnTimeout = setTimeout(() => {
-      turn.value = currentTurn + 1;
-    }, autoRunTurnDuration);
+      turn.value = currentTurn + 1
+    }, autoRunTurnDuration)
   }
 })
 
 const grid = computed(() => {
-  const computedGrid = Array.from({ length: gridSize }, () => Array(gridSize));
-  if (turn.value >= 0 && props.game?.turns && props.game.turns.length && props.game.turns.length > turn.value) {
+  const computedGrid = Array.from({ length: gridSize }, () => Array(gridSize))
+  if (
+    turn.value >= 0 &&
+    props.game?.turns &&
+    props.game.turns.length &&
+    props.game.turns.length > turn.value
+  ) {
     // TODO: type
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Object.values(props.game.turns[turn.value]).forEach((tile: any) => {
       computedGrid[tile.bot.x][tile.bot.y] = tile
-    });
+    })
   }
-  return computedGrid;
+  return computedGrid
 })
 
 function squaredDistToCenter(x: number, y: number): number {
-  const center = 1 + ((gridSize - 1) / 2)
+  const center = 1 + (gridSize - 1) / 2
   return (x - center) ** 2 + (y - center) ** 2
 }
 
@@ -88,8 +96,8 @@ function getAction(grid: any[][], x: number, y: number): any {
 }
 
 onUnmounted(() => {
-  clearTimeout(animationTimeout);
-  clearTimeout(turnTimeout);
+  clearTimeout(animationTimeout)
+  clearTimeout(turnTimeout)
 })
 </script>
 
@@ -100,31 +108,59 @@ onUnmounted(() => {
     </div>
     <div class="grid">
       <div v-for="x in gridSize" :key="x" class="row">
-        <div v-for="y in gridSize" :key="y" :style="`--delay: ${(squaredDistToCenter(x, y) / ((gridSize / 2) ** 2))}s`"
-          class="cell" :class="{
-            'enabled-cell': squaredDistToCenter(x, y) < ((gridRadius) ** 2),
-            'blue': getBot(grid, x, y)?.playerId === 1,
-            'red': getBot(grid, x, y)?.playerId === 2,
-            'guard': getAction(grid, x, y)?.actionType === ActionType.Guard,
-            'suicide': getAction(grid, x, y)?.actionType === ActionType.Suicide
-          }">
-          <div class="bot-move-wrapper" :class="{
-            'move': getAction(grid, x, y)?.actionType === ActionType.Move,
-            'attack': getAction(grid, x, y)?.actionType === ActionType.Attack,
-            'suicide': getAction(grid, x, y)?.actionType === ActionType.Suicide
-          }">
+        <div
+          v-for="y in gridSize"
+          :key="y"
+          :style="`--delay: ${squaredDistToCenter(x, y) / (gridSize / 2) ** 2}s`"
+          class="cell"
+          :class="{
+            'enabled-cell': squaredDistToCenter(x, y) < gridRadius ** 2,
+            blue: getBot(grid, x, y)?.playerId === 1,
+            red: getBot(grid, x, y)?.playerId === 2,
+            guard: getAction(grid, x, y)?.actionType === ActionType.Guard,
+            suicide: getAction(grid, x, y)?.actionType === ActionType.Suicide,
+          }"
+        >
+          <div
+            class="bot-move-wrapper"
+            :class="{
+              move: getAction(grid, x, y)?.actionType === ActionType.Move,
+              attack: getAction(grid, x, y)?.actionType === ActionType.Attack,
+              suicide: getAction(grid, x, y)?.actionType === ActionType.Suicide,
+            }"
+          >
             <FontAwesomeIcon
-              v-if="getAction(grid, x, y)?.actionType === ActionType.Suicide || getAction(grid, x, y)?.y + 1 == y - 1"
-              class="bot-move-icon top-icon" :icon="['fas', 'caret-up']" />
+              v-if="
+                getAction(grid, x, y)?.actionType === ActionType.Suicide ||
+                getAction(grid, x, y)?.y + 1 == y - 1
+              "
+              class="bot-move-icon top-icon"
+              :icon="['fas', 'caret-up']"
+            />
             <FontAwesomeIcon
-              v-if="getAction(grid, x, y)?.actionType === ActionType.Suicide || getAction(grid, x, y)?.x + 1 == x + 1"
-              class="bot-move-icon right-icon" :icon="['fas', 'caret-right']" />
+              v-if="
+                getAction(grid, x, y)?.actionType === ActionType.Suicide ||
+                getAction(grid, x, y)?.x + 1 == x + 1
+              "
+              class="bot-move-icon right-icon"
+              :icon="['fas', 'caret-right']"
+            />
             <FontAwesomeIcon
-              v-if="getAction(grid, x, y)?.actionType === ActionType.Suicide || getAction(grid, x, y)?.y + 1 == y + 1"
-              class="bot-move-icon bottom-icon" :icon="['fas', 'caret-down']" />
+              v-if="
+                getAction(grid, x, y)?.actionType === ActionType.Suicide ||
+                getAction(grid, x, y)?.y + 1 == y + 1
+              "
+              class="bot-move-icon bottom-icon"
+              :icon="['fas', 'caret-down']"
+            />
             <FontAwesomeIcon
-              v-if="getAction(grid, x, y)?.actionType === ActionType.Suicide || getAction(grid, x, y)?.x + 1 == x - 1"
-              class="bot-move-icon left-icon" :icon="['fas', 'caret-left']" />
+              v-if="
+                getAction(grid, x, y)?.actionType === ActionType.Suicide ||
+                getAction(grid, x, y)?.x + 1 == x - 1
+              "
+              class="bot-move-icon left-icon"
+              :icon="['fas', 'caret-left']"
+            />
           </div>
           <p class="hp">{{ getBot(grid, x, y)?.hp }}</p>
         </div>
@@ -265,8 +301,8 @@ onUnmounted(() => {
   background-color: white;
 
   animation-name: sleepy-cell, spawn-cell;
-  animation-duration: calc(0.5s + var(--delay)/2), 0.25s;
-  animation-delay: 0s, calc(0.5s + var(--delay)/2);
+  animation-duration: calc(0.5s + var(--delay) / 2), 0.25s;
+  animation-delay: 0s, calc(0.5s + var(--delay) / 2);
 }
 
 .bot-move-wrapper {
@@ -304,7 +340,7 @@ onUnmounted(() => {
 
 @font-face {
   font-family: Inconsolata;
-  src: url("/src/assets/fonts/font.woff2");
+  src: url('/src/assets/fonts/font.woff2');
 }
 
 .hp {

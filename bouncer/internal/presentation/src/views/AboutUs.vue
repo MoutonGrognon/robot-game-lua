@@ -1,9 +1,5 @@
 <script setup lang="ts">
-<<<<<<< HEAD
-import Title from '@/components/Title.vue'
-=======
-import PageTitle from '@/components/PageTitle.vue';
->>>>>>> fb99ec9 (refactor: rename single word components)
+import PageTitle from '@/components/PageTitle.vue'
 </script>
 
 <template>

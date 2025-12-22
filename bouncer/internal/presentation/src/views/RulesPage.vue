@@ -1,9 +1,5 @@
 <script setup lang="ts">
-<<<<<<< HEAD:bouncer/internal/presentation/src/views/Rules.vue
-import Title from '@/components/Title.vue'
-=======
-import PageTitle from '@/components/PageTitle.vue';
->>>>>>> fb99ec9 (refactor: rename single word components):bouncer/internal/presentation/src/views/RulesPage.vue
+import PageTitle from '@/components/PageTitle.vue'
 </script>
 
 <template>
@@ -14,16 +10,16 @@ import PageTitle from '@/components/PageTitle.vue';
       Robot Game - Legendary Ultimate Arena is a competitive game featuring turn based battles where
       two teams of robots fight in an arena. Players write the lua script controlling robots of
       their team, to make them move, attack, defend or even explode. The goal is to have more robots
-      than the opposing team at the end of the battle.
+      than the opposing team at the end of the battle. Robot Game - Legendary Ultimate Arena is a
+      competitive game featuring turn based battles where two teams of robots fight in an arena.
+      Players write the lua script controlling robots of their team, to make them move, attack,
+      defend or even explode. The goal is to have more robots than the opposing team at the end of
+      the battle.
     </p>
+    <p>Robots have 10ms to act, they have one action per turn:</p>
     <p>Robots have 10ms to act, they have one action per turn:</p>
     <ul>
       <li><code>MOVE</code> : moves the robot to an adjacent tile.</li>
-      <li><code>ATTACK</code> : attack a tile at range.</li>
-      <li>
-        <code>GUARD</code> : stay in place, protect against collision damage and take half damage
-        from attacks and suicides.
-      </li>
       <li><code>ATTACK</code> : attack an adjacent tile.</li>
       <li>
         <code>GUARD</code> : stay in place, protect against collision damage and take half damage
@@ -34,6 +30,9 @@ import PageTitle from '@/components/PageTitle.vue';
     <p>
       There are no friendly damage (collision, attack and suicide only deal damage to enemy
       robots).<br />
+      They are several waves in which robots spawn randomly, The team that have more robots at the
+      end of the game wins. There are no friendly damage (collision, attack and suicide only deal
+      damage to enemy robots).<br />
       They are several waves in which robots spawn randomly, The team that have more robots at the
       end of the game wins.
     </p>

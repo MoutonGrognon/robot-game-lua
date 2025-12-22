@@ -1,38 +1,39 @@
 <script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue';
-import FullGame from '@/components/FullGame.vue';
-import { shallowRef } from 'vue';
+import PageTitle from '@/components/PageTitle.vue'
+import FullGame from '@/components/FullGame.vue'
+import { shallowRef } from 'vue'
 
-import { useZstdStore } from '@/stores/zstd.ts';
+import { useZstdStore } from '@/stores/zstd.ts'
 
-const zstd = useZstdStore();
+const zstd = useZstdStore()
 
 // TODO: type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const game = shallowRef({ turns: [] as any[] });
+const game = shallowRef({ turns: [] as any[] })
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const gameMetadata = shallowRef({} as { [key: string]: any });
+const gameMetadata = shallowRef({} as { [key: string]: any })
 
 // TODO: use a store
-fetch("http://localhost:5555/highlighted-match", {
+fetch('http://localhost:5555/highlighted-match', {
   headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
   },
-}).then(resp => resp.json())
-  .then(matchResp => {
+})
+  .then((resp) => resp.json())
+  .then((matchResp) => {
     if (matchResp?.match) {
-      const { compressedGame, ...metadata } = matchResp.match;
-      gameMetadata.value = { ...metadata };
-      const bytes = Uint8Array.from(atob(compressedGame), c => c.charCodeAt(0));
-      const utf8Decode = new TextDecoder();
+      const { compressedGame, ...metadata } = matchResp.match
+      gameMetadata.value = { ...metadata }
+      const bytes = Uint8Array.from(atob(compressedGame), (c) => c.charCodeAt(0))
+      const utf8Decode = new TextDecoder()
       zstd.initialize().then(() => {
-        const payload = utf8Decode.decode(zstd.decompress(bytes));
-        const turns = JSON.parse(payload);
-        game.value = { turns };
+        const payload = utf8Decode.decode(zstd.decompress(bytes))
+        const turns = JSON.parse(payload)
+        game.value = { turns }
       })
     }
-  });
+  })
 </script>
 
 <template>
@@ -138,7 +139,7 @@ fetch("http://localhost:5555/highlighted-match", {
   height: fit-content;
   font-size: 12px;
   font-weight: 700;
-  padding: 4px 8px
+  padding: 4px 8px;
 }
 
 .red {
