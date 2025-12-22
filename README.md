@@ -151,7 +151,6 @@ an object `rg` is accessible by all robots, with the following functions and pro
   - `spawn_delay = 10` : The delay between 2 waves of spawns.
   - `spawn_count = 5` : The number of robots spawned for each team for each wave of spawns.
   - `robot_hp = 50` : The maximum number of Health Points of a robot.
-  - `attack_range = 1` : The maximum distance to another bot for an attack to be valid.
   - `attack_damage` : The min and max damage dealt by an attack : - `min = 8` : the minimum - `max = 10` : the maximum
   - `suicide_damage = 15` : The damage dealt by a suicide.
   - `collision_damage = 5` : The damage dealt by a collision.
@@ -162,7 +161,7 @@ an object `rg` is accessible by all robots, with the following functions and pro
 Robots have 10ms to act, they have one action per turn:
 
 - `MOVE` : moves the robot to an adjacent tile.
-- `ATTACK` : attack a tile at range.
+- `ATTACK` : attack an adjacent tile.
 - `GUARD` : stay in place, protect against collision damage and take half damage from attacks and suicides.
 - `SUICIDE` : dies but deals damage to adjacent tiles.
 

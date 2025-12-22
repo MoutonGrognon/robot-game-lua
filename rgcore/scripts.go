@@ -18,7 +18,6 @@ rg.SETTINGS = {
 	spawn_delay = ` + fmt.Sprintf("%d", rgconst.SPAWN_DELAY) + `,
 	spawn_count = ` + fmt.Sprintf("%d", rgconst.SPAWN_COUNT) + `,
 	robot_hp = ` + fmt.Sprintf("%d", rgconst.MAX_HP) + `,
-	attack_range = ` + fmt.Sprintf("%d", rgconst.ATTACK_RANGE) + `,
 	attack_damage = { ` +
 		`min=` + fmt.Sprintf("%d", rgconst.ATTACK_DAMAGE_MIN) + `, ` +
 		`max=` + fmt.Sprintf("%d", rgconst.ATTACK_DAMAGE_MAX) +

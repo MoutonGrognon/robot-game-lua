@@ -20,6 +20,11 @@ import Title from '@/components/Title.vue'
         <code>GUARD</code> : stay in place, protect against collision damage and take half damage
         from attacks and suicides.
       </li>
+      <li><code>ATTACK</code> : attack an adjacent tile.</li>
+      <li>
+        <code>GUARD</code> : stay in place, protect against collision damage and take half damage
+        from attacks and suicides.
+      </li>
       <li><code>SUICIDE</code> : dies but deals damage to adjacent tiles.</li>
     </ul>
     <p>
