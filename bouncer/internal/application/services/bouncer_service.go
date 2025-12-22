@@ -71,36 +71,36 @@ func (s *BouncerService) GetHighlightedMatchDebounced() (*entities.Match, error)
 		bestHighlightScore := math.MinInt
 		eloById := map[uuid.UUID]int{}
 		for _, summary := range summaries {
-			elo1, elo1Found := eloById[summary.BotId1]
-			elo2, elo2Found := eloById[summary.BotId2]
-			if !elo1Found {
+			blueElo, blueEloFound := eloById[summary.BlueBotId]
+			redElo, redEloFound := eloById[summary.RedBotId]
+			if !blueEloFound {
 				for _, rank := range ranks {
-					if rank.BotId == summary.BotId1 {
-						eloById[rank.BotId] = elo1
-						elo1, elo1Found = eloById[summary.BotId1]
+					if rank.BotId == summary.BlueBotId {
+						eloById[rank.BotId] = blueElo
+						blueElo, blueEloFound = eloById[summary.BlueBotId]
 						break
 					}
 				}
 			}
-			if !elo2Found {
+			if !redEloFound {
 				for _, rank := range ranks {
-					if rank.BotId == summary.BotId2 {
-						eloById[rank.BotId] = elo2
-						elo2, elo2Found = eloById[summary.BotId2]
+					if rank.BotId == summary.RedBotId {
+						eloById[rank.BotId] = redElo
+						redElo, redEloFound = eloById[summary.RedBotId]
 						break
 					}
 				}
 			}
-			if !elo1Found || !elo2Found {
+			if !blueEloFound || !redEloFound {
 				continue
 			}
-			lowElo := elo1
-			highElo := elo2
-			if elo1 > elo2 {
-				lowElo = elo2
-				highElo = elo1
+			lowElo := blueElo
+			highElo := redElo
+			if blueElo > redElo {
+				lowElo = redElo
+				highElo = blueElo
 			}
-			scoreDifference := summary.Score1 - summary.Score2
+			scoreDifference := summary.BlueScore - summary.RedScore
 			// Arbitrary formula to get high elo but low elo difference,
 			// while having a close match (low score difference)
 			highlightScore := 3*lowElo - highElo - scoreDifference*scoreDifference

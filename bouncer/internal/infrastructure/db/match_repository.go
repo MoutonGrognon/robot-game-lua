@@ -27,7 +27,7 @@ func (mr *MatchRepository) GetById(id uuid.UUID) (entities.Match, error) {
 	if err != nil {
 		return match, err
 	}
-	err = stmt.QueryRow(id).Scan(&match.Id, &match.BotId1, &match.BotId2, &match.BotName1, &match.BotName2, &match.UserName1, &match.UserName2, &match.Date, &match.CompressedGame, &match.Score1, &match.Score2, &match.Ranked)
+	err = stmt.QueryRow(id).Scan(&match.Id, &match.BlueBotId, &match.RedBotId, &match.BlueBotName, &match.RedBotName, &match.BlueUserName, &match.RedUserName, &match.Date, &match.CompressedGame, &match.BlueScore, &match.RedScore, &match.Ranked)
 	if err != nil {
 		return match, err
 	}
@@ -37,7 +37,7 @@ func (mr *MatchRepository) GetById(id uuid.UUID) (entities.Match, error) {
 func (mr *MatchRepository) GetSummaries(start int, size int) ([]entities.MatchSummary, int, int, int, error) {
 	var matches []entities.MatchSummary
 	total := 0
-	stmt, err := mr.db.Prepare("SELECT id, botId1, botId2, botName1, botName2, userName1, userName2, date, score1, score2, ranked FROM (" +
+	stmt, err := mr.db.Prepare("SELECT id, blueBotId, redBotId, blueBotName, redBotName, blueUserName, redUserName, date, blueScore, redScore, ranked FROM (" +
 		"SELECT ROW_NUMBER() OVER (ORDER BY date DESC) as rowNum, * FROM matches" +
 		") WHERE (rowNum>=$1 AND rowNum<$2) ORDER BY rowNum")
 	if err != nil {
@@ -50,7 +50,7 @@ func (mr *MatchRepository) GetSummaries(start int, size int) ([]entities.MatchSu
 	defer rows.Close()
 	for rows.Next() {
 		var match entities.MatchSummary
-		err = rows.Scan(&match.Id, &match.BotId1, &match.BotId2, &match.BotName1, &match.BotName2, &match.UserName1, &match.UserName2, &match.Date, &match.Score1, &match.Score2, &match.Ranked)
+		err = rows.Scan(&match.Id, &match.BlueBotId, &match.RedBotId, &match.BlueBotName, &match.RedBotName, &match.BlueUserName, &match.RedUserName, &match.Date, &match.BlueScore, &match.RedScore, &match.Ranked)
 		if err != nil {
 			return matches, start, size, total, err
 		}
@@ -67,7 +67,7 @@ func (mr *MatchRepository) GetSummaries(start int, size int) ([]entities.MatchSu
 
 func (mr *MatchRepository) GetRecentSummaries(dateThreshold time.Time) ([]entities.MatchSummary, error) {
 	var matches []entities.MatchSummary
-	stmt, err := mr.db.Prepare("SELECT id, botId1, botId2, botName1, botName2, userName1, userName2, date, score1, score2, ranked FROM matches WHERE date>=$1")
+	stmt, err := mr.db.Prepare("SELECT id, blueBotId, redBotId, blueBotName, redBotName, blueUserName, redUserName, date, blueScore, redScore, ranked FROM matches WHERE date>=$1")
 	if err != nil {
 		return matches, err
 	}
@@ -78,7 +78,7 @@ func (mr *MatchRepository) GetRecentSummaries(dateThreshold time.Time) ([]entiti
 	defer rows.Close()
 	for rows.Next() {
 		var match entities.MatchSummary
-		err = rows.Scan(&match.Id, &match.BotId1, &match.BotId2, &match.BotName1, &match.BotName2, &match.UserName1, &match.UserName2, &match.Date, &match.Score1, &match.Score2, &match.Ranked)
+		err = rows.Scan(&match.Id, &match.BlueBotId, &match.RedBotId, &match.BlueBotName, &match.RedBotName, &match.BlueUserName, &match.RedUserName, &match.Date, &match.BlueScore, &match.RedScore, &match.Ranked)
 		if err != nil {
 			return matches, err
 		}

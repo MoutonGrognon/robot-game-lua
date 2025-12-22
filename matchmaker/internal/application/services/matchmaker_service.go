@@ -150,8 +150,8 @@ func (s *MatchmakerService) printGrid(currentGameState map[int]rgentities.BotSta
 	fmt.Printf("\033[47m%s\033[0m\n", gameStateAsStr)
 }
 
-func (s *MatchmakerService) MatchEsperance(elo1 int, elo2 int) float64 {
-	return 1.0 / (1.0 + math.Pow(10.0, float64(elo2-elo1)/400.0))
+func (s *MatchmakerService) MatchEsperance(blueElo int, redElo int) float64 {
+	return 1.0 / (1.0 + math.Pow(10.0, float64(redElo-blueElo)/400.0))
 }
 
 // Factor K to modulate elo variation.
@@ -265,10 +265,10 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 	blueRankIndex := -1
 	redRankIndex := -1
 	for i, rank := range s.ranks {
-		if rank.BotId == match.BotId1 {
+		if rank.BotId == match.BlueBotId {
 			blueRankIndex = i
 		}
-		if rank.BotId == match.BotId2 {
+		if rank.BotId == match.RedBotId {
 			redRankIndex = i
 		}
 	}
@@ -276,8 +276,8 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 		blueRankIndex = len(s.ranks)
 		s.ranks = append(s.ranks, entities.Rank{
 			Id:        uuid.New(),
-			BotId:     match.BotId1,
-			BotName:   match.BotName1,
+			BotId:     match.BlueBotId,
+			BotName:   match.BlueBotName,
 			Elo:       DEFAULT_ELO,
 			WinCount:  0,
 			DrawCount: 0,
@@ -288,8 +288,8 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 		redRankIndex = len(s.ranks)
 		s.ranks = append(s.ranks, entities.Rank{
 			Id:        uuid.New(),
-			BotId:     match.BotId2,
-			BotName:   match.BotName2,
+			BotId:     match.RedBotId,
+			BotName:   match.RedBotName,
 			Elo:       DEFAULT_ELO,
 			WinCount:  0,
 			DrawCount: 0,
@@ -303,11 +303,11 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 	redElo := s.ranks[redRankIndex].Elo
 	blueK := s.dynamicK(blueMatchCount) * s.fairnessBalancingFactor(blueElo, blueMatchCount, redMatchCount)
 	redK := s.dynamicK(redMatchCount) * s.fairnessBalancingFactor(redElo, redMatchCount, blueMatchCount)
-	if match.Score1 > match.Score2 {
+	if match.BlueScore > match.RedScore {
 		res = 1.0
 		s.ranks[blueRankIndex].WinCount += 1
 		s.ranks[redRankIndex].LossCount += 1
-	} else if match.Score1 < match.Score2 {
+	} else if match.BlueScore < match.RedScore {
 		res = 0.0
 		s.ranks[blueRankIndex].LossCount += 1
 		s.ranks[redRankIndex].WinCount += 1
@@ -337,16 +337,16 @@ func (s *MatchmakerService) SaveMatch(matchId uuid.UUID, game []map[int]rgentiti
 		fmt.Printf("turn %d\n", i+1)
 		s.printGrid(state)
 	}
-	score1 := 0
-	score2 := 0
+	blueScore := 0
+	redScore := 0
 	for _, botState := range game[len(game)-1] {
 		if botState.Bot.PlayerId == rgconst.BLUE_ID {
-			score1 += 1
+			blueScore += 1
 		} else {
-			score2 += 1
+			redScore += 1
 		}
 	}
-	fmt.Printf("%v - %v\n", score1, score2)
+	fmt.Printf("%v - %v\n", blueScore, redScore)
 	s.matchMu.Lock()
 	defer s.matchMu.Unlock()
 	if matchId != s.currentMatch.Id {
@@ -373,16 +373,16 @@ func (s *MatchmakerService) SaveMatch(matchId uuid.UUID, game []map[int]rgentiti
 	// TODO: WIP begin transaction
 	match := entities.Match{
 		Id:             matchId,
-		BotId1:         s.currentMatch.BotId1,
-		BotId2:         s.currentMatch.BotId2,
-		BotName1:       s.currentMatch.BotName1,
-		BotName2:       s.currentMatch.BotName2,
-		UserName1:      s.currentMatch.UserName1,
-		UserName2:      s.currentMatch.UserName2,
+		BlueBotId:      s.currentMatch.BlueBotId,
+		RedBotId:       s.currentMatch.RedBotId,
+		BlueBotName:    s.currentMatch.BlueBotName,
+		RedBotName:     s.currentMatch.RedBotName,
+		BlueUserName:   s.currentMatch.BlueUserName,
+		RedUserName:    s.currentMatch.RedUserName,
 		Date:           time.Now(),
 		CompressedGame: compressedGame,
-		Score1:         score1,
-		Score2:         score2,
+		BlueScore:      blueScore,
+		RedScore:       redScore,
 		Ranked:         s.currentMatch.Ranked,
 	}
 	err = s.matchRepo.Save(match)
@@ -434,14 +434,14 @@ func (s *MatchmakerService) CreateMatchFromNames(blueName string, redName string
 		return pendingMatch, err
 	}
 	pendingMatch = entities.PendingMatch{
-		Id:        uuid.New(),
-		BotId1:    blueId,
-		BotId2:    redId,
-		BotName1:  blueName,
-		BotName2:  redName,
-		UserName1: blueUserName,
-		UserName2: redUserName,
-		Ranked:    ranked,
+		Id:           uuid.New(),
+		BlueBotId:    blueId,
+		RedBotId:     redId,
+		BlueBotName:  blueName,
+		RedBotName:   redName,
+		BlueUserName: blueUserName,
+		RedUserName:  redUserName,
+		Ranked:       ranked,
 	}
 	return pendingMatch, nil
 }
@@ -463,7 +463,7 @@ func (s *MatchmakerService) AddMatchToQueue(blueName string, redName string) (bo
 func (s *MatchmakerService) StartMatch(pendingMatch entities.PendingMatch) error {
 	*s.currentMatch = pendingMatch
 	s.isRunning = true
-	err := s.refereeMS.StartMatch(pendingMatch.Id, pendingMatch.BotId1, pendingMatch.BotId2)
+	err := s.refereeMS.StartMatch(pendingMatch.Id, pendingMatch.BlueBotId, pendingMatch.RedBotId)
 	if err != nil {
 		s.isRunning = false
 	}

@@ -24,7 +24,7 @@ function getResultIcon(result: number): string {
 }
 
 const trueBlueResult = computed(() => {
-  return props.preview.score1 - props.preview.score2;
+  return props.preview.blueScore - props.preview.redScore;
 });
 </script>
 
@@ -32,19 +32,19 @@ const trueBlueResult = computed(() => {
   <RouterLink :to="`matches/${preview.id}`" class="wrapper">
     <div class="count">{{ index }}</div>
     <div class="blue-name" :class="{ 'winner': trueBlueResult > 0, 'loser': trueBlueResult < 0 }">
-      {{ preview.botName1 }}
+      {{ preview.blueBotName }}
     </div>
     <FontAwesomeIcon :icon="['fas', getResultIcon(trueBlueResult)]"
       :class="{ 'winner': trueBlueResult > 0, 'loser': trueBlueResult < 0 }" />
     <div class="score">
-      <span class="blue-score">{{ preview.score1 }}</span>
+      <span class="blue-score">{{ preview.blueScore }}</span>
       <span>-</span>
-      <span class="red-score">{{ preview.score2 }}</span>
+      <span class="red-score">{{ preview.redScore }}</span>
     </div>
     <FontAwesomeIcon :icon="['fas', getResultIcon(-trueBlueResult)]"
       :class="{ 'winner': trueBlueResult < 0, 'loser': trueBlueResult > 0 }" />
     <div class="red-name" :class="{ 'winner': trueBlueResult < 0, 'loser': trueBlueResult > 0 }">
-      {{ preview.botName2 }}
+      {{ preview.redBotName }}
     </div>
   </RouterLink>
 </template>

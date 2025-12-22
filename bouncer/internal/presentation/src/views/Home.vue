@@ -40,12 +40,12 @@ fetch("http://localhost:5555/highlighted-match", {
   <div class="welcome">
     <div class="banners">
       <div class="banner banner-left blue">
-        <span class="user-name">{{ gameMetadata.userName1 }}</span>
-        <span class="bot-name">{{ gameMetadata.botName1 }}</span>
+        <span class="user-name">{{ gameMetadata.blueUserName }}</span>
+        <span class="bot-name">{{ gameMetadata.blueBotName }}</span>
       </div>
       <div class="banner banner-right red">
-        <span class="bot-name">{{ gameMetadata.botName2 }}</span>
-        <span class="user-name">{{ gameMetadata.userName2 }}</span>
+        <span class="bot-name">{{ gameMetadata.redBotName }}</span>
+        <span class="user-name">{{ gameMetadata.redUserName }}</span>
       </div>
     </div>
     <Game :game="game" :metadata="gameMetadata" />

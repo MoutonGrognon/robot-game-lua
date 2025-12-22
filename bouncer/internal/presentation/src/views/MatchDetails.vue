@@ -28,7 +28,7 @@ watch(
   { immediate: true }
 )
 
-const subtitle = computed(() => `${gameStore.gameMetadata?.botName1} VS ${gameStore.gameMetadata?.botName2}`)
+const subtitle = computed(() => `${gameStore.gameMetadata?.blueBotName} VS ${gameStore.gameMetadata?.redBotName}`)
 </script>
 
 <template>

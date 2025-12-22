@@ -7,17 +7,17 @@ import (
 )
 
 type MatchSummary struct {
-	Id        uuid.UUID `json:"id"`
-	BotId1    uuid.UUID `json:"botId1"`
-	BotId2    uuid.UUID `json:"botId2"`
-	BotName1  string    `json:"botName1"`
-	BotName2  string    `json:"botName2"`
-	UserName1 string    `json:"userName1"`
-	UserName2 string    `json:"userName2"`
-	Date      time.Time `json:"date"`
-	Score1    int       `json:"score1"`
-	Score2    int       `json:"score2"`
-	Ranked    bool      `json:"ranked"`
+	Id           uuid.UUID `json:"id"`
+	BlueBotId    uuid.UUID `json:"blueBotId"`
+	RedBotId     uuid.UUID `json:"redBotId"`
+	BlueBotName  string    `json:"blueBotName"`
+	RedBotName   string    `json:"redBotName"`
+	BlueUserName string    `json:"blueUserName"`
+	RedUserName  string    `json:"redUserName"`
+	Date         time.Time `json:"date"`
+	BlueScore    int       `json:"blueScore"`
+	RedScore     int       `json:"redScore"`
+	Ranked       bool      `json:"ranked"`
 }
 
 type Match struct {

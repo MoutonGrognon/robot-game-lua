@@ -14,7 +14,7 @@ ALTER FUNCTION load_bot(TEXT) OWNER TO postgres;
 CREATE TABLE users (id UUID PRIMARY KEY, name VARCHAR (20));
 CREATE TABLE bots (id UUID PRIMARY KEY, name VARCHAR (16), script TEXT, userId UUID REFERENCES users (id) , userName VARCHAR (20));
 CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER, winCount INTEGER, drawCount INTEGER, lossCount INTEGER);
-CREATE TABLE matches (id UUID PRIMARY KEY, botId1 UUID REFERENCES bots (id), botId2 UUID REFERENCES bots (id), botName1 VARCHAR (16), botName2 VARCHAR (16), userName1 VARCHAR (20), userName2 VARCHAR (20), date TIMESTAMP, compressedGame BYTEA, score1 INTEGER, score2 INTEGER, ranked BOOLEAN);
+CREATE TABLE matches (id UUID PRIMARY KEY, blueBotId UUID REFERENCES bots (id), redBotId UUID REFERENCES bots (id), blueBotName VARCHAR (16), redBotName VARCHAR (16), blueUserName VARCHAR (20), redUserName VARCHAR (20), date TIMESTAMP, compressedGame BYTEA, blueScore INTEGER, redScore INTEGER, ranked BOOLEAN);
 -- Make pagination more efficient for matches
 CREATE TABLE matches_count (count BIGINT);
 
