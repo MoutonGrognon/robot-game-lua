@@ -5,6 +5,7 @@ import { computed } from 'vue'
 // TODO: type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const props = defineProps<{ page: any }>()
+
 const emits = defineEmits<{
   (e: 'updatePaginationSize', size: number): void
   (e: 'updatePaginationStart', start: number): void

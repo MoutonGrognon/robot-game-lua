@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import PageTitle from '@/components/PageTitle.vue'
 import PaginatedList from '@/components/PaginatedList.vue'
 import MatchPreview from '@/components/MatchPreview.vue'
@@ -43,7 +43,9 @@ function updatePaginationSize(size: number): void {
   updatePage({ ...page.value, size, start: 1 })
 }
 
-fetchPagination()
+onMounted(() => {
+  fetchPagination()
+})
 </script>
 
 <template>

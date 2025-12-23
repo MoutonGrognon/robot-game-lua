@@ -8,6 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
+
 library.add(fas, far, fab)
 
 // TODO: type
@@ -18,27 +19,46 @@ const props = defineProps<{
   metadata: any
 }>()
 
-const gridRadius: number = 8.5
-const gridSize: number = (gridRadius + 1) * 2
-const maxTurn = 100
-const autoRunTurnDuration = 1000
 enum ActionType {
   Move,
   Attack,
   Guard,
   Suicide,
 }
-let gameLoaded = false
-let animationDone = false
+
+const gridRadius: number = 8.5
+const gridSize: number = (gridRadius + 1) * 2
+const maxTurn = 100
+const autoRunTurnDuration = 1000
 const animationTimeout = setTimeout(() => {
   animationDone = true
   if (gameLoaded) {
     turn.value = 0
   }
 }, 1000)
+
+let gameLoaded = false
+let animationDone = false
 let turnTimeout: number | undefined
 
 const turn = ref(-1)
+
+const grid = computed(() => {
+  const computedGrid = Array.from({ length: gridSize }, () => Array(gridSize))
+  if (
+    turn.value >= 0 &&
+    props.game?.turns &&
+    props.game.turns.length &&
+    props.game.turns.length > turn.value
+  ) {
+    // TODO: type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Object.values(props.game.turns[turn.value]).forEach((tile: any) => {
+      computedGrid[tile.bot.x][tile.bot.y] = tile
+    })
+  }
+  return computedGrid
+})
 
 watch(
   () => props.game,
@@ -59,23 +79,6 @@ watch(turn, async (currentTurn) => {
       turn.value = currentTurn + 1
     }, autoRunTurnDuration)
   }
-})
-
-const grid = computed(() => {
-  const computedGrid = Array.from({ length: gridSize }, () => Array(gridSize))
-  if (
-    turn.value >= 0 &&
-    props.game?.turns &&
-    props.game.turns.length &&
-    props.game.turns.length > turn.value
-  ) {
-    // TODO: type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Object.values(props.game.turns[turn.value]).forEach((tile: any) => {
-      computedGrid[tile.bot.x][tile.bot.y] = tile
-    })
-  }
-  return computedGrid
 })
 
 function squaredDistToCenter(x: number, y: number): number {

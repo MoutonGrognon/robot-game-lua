@@ -16,16 +16,16 @@ const props = defineProps<{
   index: number
 }>()
 
+const trueBlueResult = computed(() => {
+  return props.preview.blueScore - props.preview.redScore
+})
+
 function getResultIcon(result: number): string {
   if (result == 0) {
     return 'equals'
   }
   return result > 0 ? 'check' : 'xmark'
 }
-
-const trueBlueResult = computed(() => {
-  return props.preview.blueScore - props.preview.redScore
-})
 </script>
 
 <template>

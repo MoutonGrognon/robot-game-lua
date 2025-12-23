@@ -6,10 +6,13 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const gameStore = useGameStore()
-
 const route = useRoute()
 
 const gameId = ref('')
+
+const subtitle = computed(
+  () => `${gameStore.gameMetadata?.blueBotName} VS ${gameStore.gameMetadata?.redBotName}`,
+)
 
 watch(
   () => route.params.id,
@@ -26,10 +29,6 @@ watch(
     }
   },
   { immediate: true },
-)
-
-const subtitle = computed(
-  () => `${gameStore.gameMetadata?.blueBotName} VS ${gameStore.gameMetadata?.redBotName}`,
 )
 </script>
 

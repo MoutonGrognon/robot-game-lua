@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import PageTitle from '@/components/PageTitle.vue'
 import PaginatedList from '@/components/PaginatedList.vue'
 import RankingPreview from '@/components/RankingPreview.vue'
@@ -59,7 +59,9 @@ function updatePaginationSize(size: number): void {
   updatePage({ ...page.value, size, start: 1 })
 }
 
-fetchRanking()
+onMounted(() => {
+  fetchRanking()
+})
 </script>
 
 <template>

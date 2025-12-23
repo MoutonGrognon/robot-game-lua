@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PageTitle from '@/components/PageTitle.vue'
 import FullGame from '@/components/FullGame.vue'
-import { shallowRef } from 'vue'
+import { onMounted, shallowRef } from 'vue'
 
 import { useZstdStore } from '@/stores/zstd.ts'
 
@@ -13,27 +13,29 @@ const game = shallowRef({ turns: [] as any[] })
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const gameMetadata = shallowRef({} as { [key: string]: any })
 
-// TODO: use a store
-fetch('http://localhost:5555/highlighted-match', {
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-})
-  .then((resp) => resp.json())
-  .then((matchResp) => {
-    if (matchResp?.match) {
-      const { compressedGame, ...metadata } = matchResp.match
-      gameMetadata.value = { ...metadata }
-      const bytes = Uint8Array.from(atob(compressedGame), (c) => c.charCodeAt(0))
-      const utf8Decode = new TextDecoder()
-      zstd.initialize().then(() => {
-        const payload = utf8Decode.decode(zstd.decompress(bytes))
-        const turns = JSON.parse(payload)
-        game.value = { turns }
-      })
-    }
+onMounted(() => {
+  // TODO: use a store
+  fetch('http://localhost:5555/highlighted-match', {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   })
+    .then((resp) => resp.json())
+    .then((matchResp) => {
+      if (matchResp?.match) {
+        const { compressedGame, ...metadata } = matchResp.match
+        gameMetadata.value = { ...metadata }
+        const bytes = Uint8Array.from(atob(compressedGame), (c) => c.charCodeAt(0))
+        const utf8Decode = new TextDecoder()
+        zstd.initialize().then(() => {
+          const payload = utf8Decode.decode(zstd.decompress(bytes))
+          const turns = JSON.parse(payload)
+          game.value = { turns }
+        })
+      }
+    })
+})
 </script>
 
 <template>
