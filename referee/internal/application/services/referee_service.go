@@ -224,6 +224,8 @@ func (s *RefereeService) claimLocation(loc rgentities.Location, bot rgentities.B
 				// - potentialSwapBot wants to move from potentialSwapBotLoc to botLoc
 				// => potentialSwapBot and bot are trying to swap places
 				conflict = true
+				// The swap bot claim its own location
+				s.claimLocation(loc, potentialSwapBot, claimedMoves)
 				break
 			}
 		}
@@ -232,7 +234,7 @@ func (s *RefereeService) claimLocation(loc rgentities.Location, bot rgentities.B
 		}
 	}
 	botsInConflict := claimedMoves[loc]
-	// Deep copy to avoid unexpected behaviours
+	// Copy to avoid unexpected behaviours when updating claimedMoves
 	botsInConflict = append([]rgentities.Bot{}, botsInConflict...)
 	for _, otherBot := range botsInConflict {
 		// Bots involved in the conflict cannot move
@@ -375,44 +377,47 @@ func (s *RefereeService) playMatch(blueWarningCount int, redWarningCount int) ([
 				continue
 			}
 			updatedBot.Bot.Hp -= rgconst.COLLISION_DAMAGE * len(collisions)
-			updatedBots[updatedBot.Bot.Id] = updatedBot
+			updatedBots[botId] = updatedBot
 		}
 		// Attack & Suicide damage
 		damage := map[int]map[rgentities.Location]int{}
 		damage[rgconst.BLUE_ID] = map[rgentities.Location]int{}
 		damage[rgconst.RED_ID] = map[rgentities.Location]int{}
-		for _, botState := range game[len(game)-1] {
-			if botState.Action.ActionType == rgconst.ATTACK {
+		for botId, botState := range game[len(game)-1] {
+			bot := botState.Bot
+			switch botState.Action.ActionType {
+			case rgconst.ATTACK:
 				loc := rgentities.Location{X: botState.Action.X, Y: botState.Action.Y}
-				currentDamage, ok := damage[botState.Bot.PlayerId][loc]
+				currentDamage, ok := damage[bot.PlayerId][loc]
 				if !ok {
 					currentDamage = 0
 				}
-				damage[botState.Bot.PlayerId][loc] = currentDamage +
+				damage[bot.PlayerId][loc] = currentDamage +
 					rgconst.ATTACK_DAMAGE_MIN +
 					rand.Intn(rgconst.ATTACK_DAMAGE_MAX+1-rgconst.ATTACK_DAMAGE_MIN)
-			} else if botState.Action.ActionType == rgconst.SUICIDE {
-				updatedBot := updatedBots[botState.Bot.Id]
+			case rgconst.SUICIDE:
+				updatedBot := updatedBots[botId]
 				updatedBot.Bot.Hp = 0
-				updatedBots[updatedBot.Bot.Id] = updatedBot
+				updatedBots[botId] = updatedBot
 				for i := 0; i < 4; i++ {
-					x := botState.Bot.X + (i%2)*(i-2)
-					y := botState.Bot.Y + ((i+1)%2)*(i-1)
+					x := bot.X + (i%2)*(i-2)
+					y := bot.Y + ((i+1)%2)*(i-1)
 					loc := rgentities.Location{X: x, Y: y}
-					currentDamage, ok := damage[botState.Bot.PlayerId][loc]
+					currentDamage, ok := damage[bot.PlayerId][loc]
 					if !ok {
 						currentDamage = 0
 					}
-					damage[botState.Bot.PlayerId][loc] = currentDamage + rgconst.SUICIDE_DAMAGE
+					damage[bot.PlayerId][loc] = currentDamage + rgconst.SUICIDE_DAMAGE
 				}
 
 			}
 		}
-		for _, botState := range updatedBots {
-			loc := rgentities.Location{X: botState.Bot.X, Y: botState.Bot.Y}
+		for botId, botState := range updatedBots {
+			bot := botState.Bot
+			loc := rgentities.Location{X: bot.X, Y: bot.Y}
 			totalDamage := 0
 			ok := false
-			if botState.Bot.PlayerId == rgconst.BLUE_ID {
+			if bot.PlayerId == rgconst.BLUE_ID {
 				totalDamage, ok = damage[rgconst.RED_ID][loc]
 			} else {
 				totalDamage, ok = damage[rgconst.BLUE_ID][loc]
@@ -420,13 +425,13 @@ func (s *RefereeService) playMatch(blueWarningCount int, redWarningCount int) ([
 			if !ok {
 				continue
 			}
-			updatedBot := updatedBots[botState.Bot.Id]
+			updatedBot := updatedBots[botId]
 			if botState.Action.ActionType == rgconst.GUARD {
 				updatedBot.Bot.Hp -= totalDamage / 2
 			} else {
 				updatedBot.Bot.Hp -= totalDamage
 			}
-			updatedBots[updatedBot.Bot.Id] = updatedBot
+			updatedBots[botId] = updatedBot
 		}
 		// Remove dead bots
 		allBots = rgutils.FilterOutDeadBots(updatedBots)
