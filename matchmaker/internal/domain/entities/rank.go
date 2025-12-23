@@ -10,4 +10,5 @@ type Rank struct {
 	WinCount  int       `json:"winCount"`
 	DrawCount int       `json:"drawCount"`
 	LossCount int       `json:"lossCount"`
+	Streak    int       `json:"streak"`
 }

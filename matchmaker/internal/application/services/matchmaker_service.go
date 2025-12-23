@@ -282,6 +282,7 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 			WinCount:  0,
 			DrawCount: 0,
 			LossCount: 0,
+			Streak:    0,
 		})
 	}
 	if redRankIndex < 0 {
@@ -294,6 +295,7 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 			WinCount:  0,
 			DrawCount: 0,
 			LossCount: 0,
+			Streak:    0,
 		})
 	}
 	var res float64
@@ -304,17 +306,38 @@ func (s *MatchmakerService) UpdateRanking(match entities.Match) error {
 	blueK := s.dynamicK(blueMatchCount) * s.fairnessBalancingFactor(blueElo, blueMatchCount, redMatchCount)
 	redK := s.dynamicK(redMatchCount) * s.fairnessBalancingFactor(redElo, redMatchCount, blueMatchCount)
 	if match.BlueScore > match.RedScore {
+		// Blue wins
 		res = 1.0
 		s.ranks[blueRankIndex].WinCount += 1
+		if s.ranks[blueRankIndex].Streak < 0 {
+			s.ranks[blueRankIndex].Streak = 0
+		}
+		s.ranks[blueRankIndex].Streak += 1
 		s.ranks[redRankIndex].LossCount += 1
+		if s.ranks[redRankIndex].Streak > 0 {
+			s.ranks[redRankIndex].Streak = 0
+		}
+		s.ranks[redRankIndex].Streak -= 1
 	} else if match.BlueScore < match.RedScore {
+		// Red wins
 		res = 0.0
 		s.ranks[blueRankIndex].LossCount += 1
+		if s.ranks[blueRankIndex].Streak > 0 {
+			s.ranks[blueRankIndex].Streak = 0
+		}
+		s.ranks[blueRankIndex].Streak -= 1
 		s.ranks[redRankIndex].WinCount += 1
+		if s.ranks[redRankIndex].Streak < 0 {
+			s.ranks[redRankIndex].Streak = 0
+		}
+		s.ranks[redRankIndex].Streak += 1
 	} else {
+		// Draw
 		res = 0.5
 		s.ranks[blueRankIndex].DrawCount += 1
+		s.ranks[blueRankIndex].Streak = 0
 		s.ranks[redRankIndex].DrawCount += 1
+		s.ranks[redRankIndex].Streak = 0
 	}
 	s.ranks[blueRankIndex].Elo += int(math.Round(blueK * (res - s.MatchEsperance(s.ranks[blueRankIndex].Elo, s.ranks[redRankIndex].Elo))))
 	s.ranks[redRankIndex].Elo -= int(math.Round(redK * (res - s.MatchEsperance(s.ranks[blueRankIndex].Elo, s.ranks[redRankIndex].Elo))))

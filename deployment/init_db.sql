@@ -13,7 +13,7 @@ ALTER FUNCTION load_bot(TEXT) OWNER TO postgres;
 -- TODO: reduce name size
 CREATE TABLE users (id UUID PRIMARY KEY, name VARCHAR (20));
 CREATE TABLE bots (id UUID PRIMARY KEY, name VARCHAR (16), script TEXT, userId UUID REFERENCES users (id) , userName VARCHAR (20));
-CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER, winCount INTEGER, drawCount INTEGER, lossCount INTEGER);
+CREATE TABLE ranking (id UUID PRIMARY KEY, botId UUID REFERENCES bots (id), botName VARCHAR (16), elo INTEGER, winCount INTEGER, drawCount INTEGER, lossCount INTEGER, streak INTEGER);
 CREATE TABLE matches (id UUID PRIMARY KEY, blueBotId UUID REFERENCES bots (id), redBotId UUID REFERENCES bots (id), blueBotName VARCHAR (16), redBotName VARCHAR (16), blueUserName VARCHAR (20), redUserName VARCHAR (20), date TIMESTAMP, compressedGame BYTEA, blueScore INTEGER, redScore INTEGER, ranked BOOLEAN);
 -- Make pagination more efficient for matches
 CREATE TABLE matches_count (count BIGINT);

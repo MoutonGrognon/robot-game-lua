@@ -29,8 +29,8 @@ for path in $LOCAL_BOTS_PATH/public/*.lua $LOCAL_BOTS_PATH/private/*.lua; do
     echo "INSERT INTO bots(id, name, script, userId, userName) " \
     "VALUES('$bot_id', '$bot', load_bot(CAST('$path_in_docker' AS TEXT)), '$EXAMPLES_ID', '$EXAMPLES_NAME');" >> init.sql
     ranking_id=`uuidgen`
-    echo "INSERT INTO ranking(id, botId, botName, elo, winCount, drawCount, lossCount) " \
-    "VALUES('$ranking_id','$bot_id','$bot', '$default_elo', 0, 0, 0);" >> init.sql
+    echo "INSERT INTO ranking(id, botId, botName, elo, winCount, drawCount, lossCount, streak) " \
+    "VALUES('$ranking_id','$bot_id','$bot', '$default_elo', 0, 0, 0, 0);" >> init.sql
 done
 shopt -u nullglob
 

@@ -21,7 +21,7 @@ func NewRankingRepository(db *sql.DB) repositories.RankingRepository {
 
 func (rr *RankingRepository) GetRanking() ([]entities.Rank, error) {
 	var ranks []entities.Rank
-	stmt, err := rr.db.Prepare("SELECT id, botId, botName, elo, winCount, drawCount, lossCount FROM ranking")
+	stmt, err := rr.db.Prepare("SELECT id, botId, botName, elo, winCount, drawCount, lossCount, streak FROM ranking")
 	if err != nil {
 		return ranks, err
 	}
@@ -32,7 +32,7 @@ func (rr *RankingRepository) GetRanking() ([]entities.Rank, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var rank entities.Rank
-		err = rows.Scan(&rank.Id, &rank.BotId, &rank.BotName, &rank.Elo, &rank.WinCount, &rank.DrawCount, &rank.LossCount)
+		err = rows.Scan(&rank.Id, &rank.BotId, &rank.BotName, &rank.Elo, &rank.WinCount, &rank.DrawCount, &rank.LossCount, &rank.Streak)
 		if err != nil {
 			return ranks, err
 		}
