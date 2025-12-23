@@ -59,7 +59,7 @@ const trueBlueResult = computed(() => {
   flex-direction: row;
   padding: 8px;
   column-gap: 32px;
-  width: 100%;
+  width: calc(100% - 16px);
 
   color: black;
   text-decoration: none;
