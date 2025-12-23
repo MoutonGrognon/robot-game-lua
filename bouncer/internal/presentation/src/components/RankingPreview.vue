@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <div class="wrapper">
-    <div class="count">{{ preview.rank }}</div>
+    <div class="count">{{ preview.rank }} .</div>
     <div class="elo">
       {{ preview.elo }}
     </div>
@@ -32,15 +32,18 @@ defineProps<{
 }
 
 .count {
-  width: 50px;
+  width: 36px;
+  text-align: right;
 }
 
 .name {
   width: 150px;
+  padding-left: 16px;
 }
 
 .elo {
   font-weight: 700;
-  width: 60px;
+  width: 40px;
+  text-align: right;
 }
 </style>
