@@ -1,10 +1,7 @@
-<script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <!-- TODO: add misc infos -->
-  <PageTitle title="About" />
   <div class="main">
     <p>
       The website is not finished yet, checkout the source in the

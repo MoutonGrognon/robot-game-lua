@@ -4,6 +4,10 @@ import type { RouteRecordRaw } from 'vue-router'
 defineProps<{
   tabs: RouteRecordRaw[]
 }>()
+
+function pathMatchCurrentRoute(path: string): boolean {
+  return router.currentRoute.value.path.startsWith(path)
+}
 </script>
 
 <template>
@@ -15,8 +19,8 @@ defineProps<{
         :to="tab.path"
         class="link"
         :class="{
-          'selected-link': router.currentRoute.value.path === tab.path,
-          'active-link': router.currentRoute.value.path !== tab.path,
+          'selected-link': pathMatchCurrentRoute(tab.path),
+          'active-link': !pathMatchCurrentRoute(tab.path),
         }"
       >
         {{ tab.name }}
@@ -37,22 +41,25 @@ nav {
 
 .link {
   display: flex;
-  padding: 24px;
+  margin: 0 24px;
+  padding-top: 24px;
+  padding-bottom: 20px;
+  margin-bottom: 4px;
   width: fit-content;
   text-decoration: none;
   color: black;
+
+  background:
+    linear-gradient(black 0 0) bottom/ 0% 2px no-repeat,
+    white;
+  transition-property: background;
+  transition-duration: 0.1s;
 }
 
+.selected-link,
 .active-link:hover {
-  box-shadow: 2px 2px 4px gray;
-  z-index: 1;
-}
-
-.selected-link {
-  padding: 12px;
-  margin: 12px;
-  padding-bottom: 20px;
-  margin-bottom: 2px;
-  border-bottom: 2px solid black;
+  background:
+    linear-gradient(black 0 0) bottom/ 100% 2px no-repeat,
+    white;
 }
 </style>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue'
 import FullGame from '@/components/FullGame.vue'
 import { onMounted, shallowRef } from 'vue'
 
@@ -39,7 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <PageTitle title="Welcome to Robot Game LUA" />
+  <h1 class="title">Welcome to Robot Game LUA</h1>
   <div class="welcome">
     <div class="banners">
       <div class="banner banner-left blue">
@@ -56,6 +55,12 @@ onMounted(() => {
 </template>
 
 <style lang="css" scoped>
+.title {
+  margin: 16px;
+  display: flex;
+  flex-direction: row;
+}
+
 .welcome {
   width: 100%;
   height: 100%;

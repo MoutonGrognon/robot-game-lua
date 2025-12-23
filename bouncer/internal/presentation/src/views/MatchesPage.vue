@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import PageTitle from '@/components/PageTitle.vue'
 import PaginatedList from '@/components/PaginatedList.vue'
 import MatchPreview from '@/components/MatchPreview.vue'
 
@@ -49,7 +48,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <PageTitle title="Matches" />
   <PaginatedList
     :page="page"
     @updatePaginationSize="updatePaginationSize"

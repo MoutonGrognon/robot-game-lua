@@ -1,10 +1,7 @@
-<script setup lang="ts">
-import PageTitle from '@/components/PageTitle.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <!-- TODO: use the README.md to generate parts of this page -->
-  <PageTitle title="Rules page currently work in progress" />
   <div class="main">
     <p>
       Robot Game - Legendary Ultimate Arena is a competitive game featuring turn based battles where
