@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -13,20 +14,26 @@ import (
 )
 
 type BouncerService struct {
-	botRepo          repositories.BotRepository
-	matchRepo        repositories.MatchRepository
-	rankingRepo      repositories.RankingRepository
-	matchmakerMS     external.MatchmakerMS
-	highlightedMatch *entities.Match
+	botRepo               repositories.BotRepository
+	matchRepo             repositories.MatchRepository
+	rankingRepo           repositories.RankingRepository
+	matchmakerMS          external.MatchmakerMS
+	highlightedMatch      *entities.Match
+	deleteOldMatchesTimer *time.Timer
 }
 
+const MAX_NUMBER_OF_MATCHES = 10 * 1000
+const MATCH_DELETION_INTERVALL = 1 * time.Hour
+
 func NewBouncerService(botRepo repositories.BotRepository, matchRepo repositories.MatchRepository, rankingRepo repositories.RankingRepository) *BouncerService {
-	return &BouncerService{
+	bouncerService := &BouncerService{
 		botRepo:      botRepo,
 		matchRepo:    matchRepo,
 		rankingRepo:  rankingRepo,
 		matchmakerMS: rest.NewMatchmakerMS(),
 	}
+	bouncerService.DeleteOldMatchesDebounced()
+	return bouncerService
 }
 
 func (s *BouncerService) AddMatchToQueue(blueName string, redName string) (bool, error) {
@@ -38,7 +45,11 @@ func (s *BouncerService) GetMatch(matchId uuid.UUID) (entities.Match, error) {
 }
 
 func (s *BouncerService) GetSummaries(start int, size int) ([]entities.MatchSummary, int, int, int, error) {
-	return s.matchRepo.GetSummaries(start, size)
+	summaries, start, size, total, err := s.matchRepo.GetSummaries(start, size)
+	if total > MAX_NUMBER_OF_MATCHES {
+		total = MAX_NUMBER_OF_MATCHES
+	}
+	return summaries, start, size, total, err
 }
 
 func (s *BouncerService) GetRanking() ([]entities.Rank, error) {
@@ -116,4 +127,19 @@ func (s *BouncerService) GetHighlightedMatchDebounced() (*entities.Match, error)
 		return &match, nil
 	}
 	return s.highlightedMatch, nil
+}
+
+func (s *BouncerService) DeleteOldMatchesDebounced() {
+	if s.deleteOldMatchesTimer != nil {
+		s.deleteOldMatchesTimer.Stop()
+	}
+	s.deleteOldMatchesTimer = time.AfterFunc(MATCH_DELETION_INTERVALL, func() {
+		s.DeleteOldMatchesDebounced()
+	})
+	deletedRowsCount, err := s.matchRepo.DeleteOldMatches(MAX_NUMBER_OF_MATCHES)
+	if err != nil {
+		fmt.Printf("Error while trying to delete old matches: %v\n", err)
+	} else {
+		fmt.Printf("Deleted %v old matches\n", deletedRowsCount)
+	}
 }

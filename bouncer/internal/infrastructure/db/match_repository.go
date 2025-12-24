@@ -90,3 +90,32 @@ func (mr *MatchRepository) GetRecentSummaries(dateThreshold time.Time) ([]entiti
 	}
 	return matches, err
 }
+
+func (mr *MatchRepository) DeleteOldMatches(threshold int) (int, error) {
+	stmt, err := mr.db.Prepare("SELECT date FROM (" +
+		"SELECT ROW_NUMBER() OVER (ORDER BY date DESC) as rowNum, * FROM matches" +
+		") WHERE rowNum=$1 ORDER BY rowNum")
+	if err != nil {
+		return 0, err
+	}
+	var dateThreshold time.Time
+	err = stmt.QueryRow(threshold).Scan(&dateThreshold)
+	if err != nil {
+		return 0, err
+	}
+	stmt.Close()
+	stmt, err = mr.db.Prepare("DELETE FROM matches WHERE date<$1")
+	if err != nil {
+		return 0, err
+	}
+	res, err := stmt.Exec(dateThreshold)
+	if err != nil {
+		return 0, err
+	}
+	stmt.Close()
+	deletedRowsCount, err := res.RowsAffected()
+	if err != nil {
+		return int(deletedRowsCount), err
+	}
+	return int(deletedRowsCount), nil
+}
