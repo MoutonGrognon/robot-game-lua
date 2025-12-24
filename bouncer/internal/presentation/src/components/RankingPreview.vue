@@ -28,8 +28,11 @@ defineProps<{
         {{ preview.botName }}
       </div>
       <div class="win-streak" v-if="preview.streak > 2">
-        <FontAwesomeIcon :icon="['fas', 'fire']" />
-        <div class="win-streak-count">×{{ preview.streak }}</div>
+        <div class="fire-background"></div>
+        <div class="fire-wrapper">
+          <FontAwesomeIcon :icon="['fas', 'fire']" />
+          <div class="win-streak-count">×{{ preview.streak }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -65,6 +68,23 @@ defineProps<{
   margin-left: 8px;
   font-size: 20px;
   color: orange;
+}
+
+.fire-background {
+  display: flex;
+  align-self: center;
+  background-color: #ffee00;
+  border-radius: 6px;
+  width: 14px;
+  height: 14px;
+}
+
+.fire-wrapper {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  position: relative;
+  left: -20px;
 }
 
 .win-streak-count {
