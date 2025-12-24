@@ -25,6 +25,7 @@ func (rr *RankingRepository) GetRanking() ([]entities.Rank, error) {
 	if err != nil {
 		return ranks, err
 	}
+	defer stmt.Close()
 	rows, err := stmt.Query()
 	if err != nil {
 		return ranks, err
@@ -47,6 +48,7 @@ func (rr *RankingRepository) UpdateRank(rank entities.Rank) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(rank.Id, rank.BotId, rank.BotName, rank.Elo, rank.WinCount, rank.DrawCount, rank.LossCount, rank.Streak)
 	return err
 }

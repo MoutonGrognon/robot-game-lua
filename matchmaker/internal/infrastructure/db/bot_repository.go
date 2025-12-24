@@ -25,6 +25,7 @@ func (br *BotRepository) GetIdFromName(name string) (uuid.UUID, error) {
 	if err != nil {
 		return id, err
 	}
+	defer stmt.Close()
 	err = stmt.QueryRow(name).Scan(&id)
 	return id, err
 }
@@ -35,6 +36,7 @@ func (br *BotRepository) GetUserNameFromBotId(id uuid.UUID) (string, error) {
 	if err != nil {
 		return name, err
 	}
+	defer stmt.Close()
 	err = stmt.QueryRow(id).Scan(&name)
 	return name, err
 }

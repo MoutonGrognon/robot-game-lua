@@ -27,6 +27,7 @@ func (mr *MatchRepository) GetById(id uuid.UUID) (entities.Match, error) {
 	if err != nil {
 		return match, err
 	}
+	defer stmt.Close()
 	err = stmt.QueryRow(id).Scan(&match.Id, &match.BlueBotId, &match.RedBotId, &match.BlueBotName, &match.RedBotName, &match.BlueUserName, &match.RedUserName, &match.Date, &match.CompressedGame, &match.BlueScore, &match.RedScore, &match.Ranked)
 	if err != nil {
 		return match, err
@@ -43,6 +44,7 @@ func (mr *MatchRepository) GetSummaries(start int, size int) ([]entities.MatchSu
 	if err != nil {
 		return matches, start, size, total, err
 	}
+	defer stmt.Close()
 	rows, err := stmt.Query(start, start+size)
 	if err != nil {
 		return matches, start, size, total, err
@@ -71,6 +73,7 @@ func (mr *MatchRepository) GetRecentSummaries(dateThreshold time.Time) ([]entiti
 	if err != nil {
 		return matches, err
 	}
+	defer stmt.Close()
 	rows, err := stmt.Query(dateThreshold)
 	if err != nil {
 		return matches, err
@@ -100,19 +103,19 @@ func (mr *MatchRepository) DeleteOldMatches(threshold int) (int, error) {
 	}
 	var dateThreshold time.Time
 	err = stmt.QueryRow(threshold).Scan(&dateThreshold)
+	stmt.Close()
 	if err != nil {
 		return 0, err
 	}
-	stmt.Close()
 	stmt, err = mr.db.Prepare("DELETE FROM matches WHERE date<$1")
 	if err != nil {
 		return 0, err
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(dateThreshold)
 	if err != nil {
 		return 0, err
 	}
-	stmt.Close()
 	deletedRowsCount, err := res.RowsAffected()
 	if err != nil {
 		return int(deletedRowsCount), err

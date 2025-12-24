@@ -27,6 +27,7 @@ func (br *BotRepository) GetById(id uuid.UUID) (entities.Bot, error) {
 		fmt.Printf("Error: %v\n", err)
 		return entities.Bot{}, err
 	}
+	defer stmt.Close()
 	var bot entities.Bot
 	err = stmt.QueryRow(id).Scan(&bot.Name, &bot.Script)
 	if err != nil {

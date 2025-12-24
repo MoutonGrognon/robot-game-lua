@@ -24,6 +24,7 @@ func (mr *MatchRepository) Save(match entities.Match) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(match.Id, match.BlueBotId, match.RedBotId, match.BlueBotName, match.RedBotName, match.BlueUserName, match.RedUserName, match.Date, match.CompressedGame, match.BlueScore, match.RedScore, match.Ranked)
 	return err
 }

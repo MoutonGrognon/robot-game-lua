@@ -25,6 +25,7 @@ func (rr *RankingRepository) GetRanking() ([]entities.Rank, error) {
 	if err != nil {
 		return ranks, err
 	}
+	defer stmt.Close()
 	rows, err := stmt.Query()
 	if err != nil {
 		return ranks, err
